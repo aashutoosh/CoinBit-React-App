@@ -1,0 +1,116 @@
+:root {
+    /*========== Colors ==========*/
+    --green-100: rgb(14, 203, 129);
+    --green-300: rgb(0, 126, 48);
+    --red-100: rgb(246, 70, 93);
+    --red-300: rgb(192, 16, 39);
+    --primary-100: #f0ba09;
+    --primary-300: #daa700;
+
+    --textLight-100: #EAECEF;
+    --textLight-300: #BBBBBB;
+    --textLight-500: #B2B2B2;
+    --textLight-900: #A2A2A2;
+
+    --textDark-100: #A7B0B6;
+    --textDark-500: #7A7A7A;
+    --textDark-900: #595959;
+
+    --background-100: #4D4D4D;
+    --background-300: #333333;
+    --background-500: #181818;
+    --background-900: #111111;
+
+    --modal: var(--background-300);
+    --border: #2c2c2c;
+    --search-result: rgb(36, 36, 36);
+
+    --box-shadow-header: 0px 4px 6px -1px rgba(0, 0, 0, 0.4);
+    --box-shadow-100: 1px 0 5px 0 #0d0d0d;
+    --box-shadow-300: 1px 1px 4px 0px rgba(0, 0, 0, 0.75);
+    --box-shadow-500: 1px 1px 15px 0px rgba(0, 0, 0, 0.75);
+
+
+    --body: var(--background-500);
+    --text-light: var(--textLight-100);
+
+    /*========== layout height and width ==========*/
+    --left-width: 25rem;
+    --container-width: 1200px;
+    --header-height: 4rem;
+
+
+    @media screen and (max-width: 1023px) {
+        --left-width: 20rem;
+    }
+
+    @media screen and (max-width: 991px) {
+        --left-width: 14rem;
+    }
+
+    /*========== z index ==========*/
+    --z-watchlist: 10;
+    --z-header: 100;
+    --z-modal: 200;
+
+    /*========== Font and typography ==========*/
+    --biggest-font-size: 2.5rem;
+    --h1-font-size: 2rem;
+    --h2-font-size: 1.75rem;
+    --h3-font-size: 1.5rem;
+    --normal-font-size: .938rem;
+    --small-font-size: .813rem;
+    --smaller-font-size: .75rem;
+
+    // Responsive typography
+    @media screen and (min-width: 576px) {
+        --biggest-font-size: 3rem;
+        --h1-font-size: 2.5rem;
+        --h2-font-size: 2rem;
+        --h3-font-size: 1.75rem;
+    }
+
+    @media screen and (min-width: 992px) {
+        --biggest-font-size: 4rem;
+        --h1-font-size: 3rem;
+        --h2-font-size: 2rem;
+        --h3-font-size: 1.5rem;
+        --normal-font-size: 1rem;
+        --small-font-size: .875rem;
+        --smaller-font-size: .813rem;
+    }
+}
+
+html[data-theme='light'] {
+    --green-100: rgb(0, 159, 13);
+    --green-300: rgb(0, 126, 48);
+    --red-100: rgb(255, 0, 34);
+    --red-300: rgb(192, 16, 39);
+    --primary-100: #0257C7;
+    --primary-300: #0a4592;
+
+    --textLight-100: #030303;
+    --textLight-300: #313131;
+    --textLight-500: #3f3f3f;
+    --textLight-900: #575757;
+
+    --textDark-100: #595959;
+    --textDark-500: #7A7A7A;
+    --textDark-900: #A7B0B6;
+
+    --background-100: #d6d6d6;
+    --background-300: #efefef;
+    --background-500: #ffffff;
+    --background-900: #EAECEF;
+
+    --modal: #fafafa;
+    --border: #ececec;
+    --search-result: #fafafa;
+
+    --box-shadow-header: rgba(9, 30, 66, 0.25) 0px 4px 8px -2px, rgba(9, 30, 66, 0.08) 0px 0px 0px 1px;
+    --box-shadow-100: rgba(9, 30, 66, 0.25) 0px 4px 8px -2px, rgba(9, 30, 66, 0.08) 0px 0px 0px 1px;
+    --box-shadow-300: rgba(9, 30, 66, 0.25) 0px 4px 8px -2px, rgba(9, 30, 66, 0.08) 0px 0px 0px 1px;
+    --box-shadow-500: rgba(9, 30, 66, 0.25) 0px 4px 8px -2px, rgba(9, 30, 66, 0.08) 0px 0px 0px 1px;
+
+    --text-light: var(--textLight-100);
+}
