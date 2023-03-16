@@ -1,4 +1,10 @@
 /*=============== SCROLL BAR ===============*/
+// Firefox
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--textDark-500) var(--background-100);
+}
+
 ::-webkit-scrollbar {
     width: 0.4rem;
 

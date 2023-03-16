@@ -1,0 +1,10 @@
+body {
+    background-color: var(--background-900);
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: var(--container-width);
+    margin-left: auto;
+    margin-right: auto;
+}
