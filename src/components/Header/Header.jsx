@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import {
   getFromLocalStorage,
   addToLocalStorage,
-  updateLocalStorage,
 } from "../../utils/localStorageUtils";
 import "./header.scss";
 
@@ -78,7 +77,7 @@ function Icons(props) {
       <div className="nav__theme" onClick={props.themeToggle}>
         {/* Moon Icon */}
         <svg
-          className="icon icon-moon active"
+          className="icon icon-moon"
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
           width={16}
@@ -89,7 +88,7 @@ function Icons(props) {
         </svg>
         {/* Sun Icon */}
         <svg
-          className="icon icon-sun"
+          className="icon icon-sun active"
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
           width={16}
@@ -126,16 +125,15 @@ export default function Header() {
 
     addToLocalStorage("theme", theme);
 
-    const currentTheme = html.getAttribute("data-theme");
-    if (currentTheme !== theme) {
-      if (currentTheme === "light") {
-        html.dataset.theme = "dark";
-        moonIcon.classList.remove("active");
-        sunIcon.classList.add("active");
-      } else if (currentTheme === "dark") {
+    if (html.dataset.theme !== theme) {
+      if (theme === "light") {
         html.dataset.theme = "light";
         sunIcon.classList.remove("active");
         moonIcon.classList.add("active");
+      } else {
+        html.dataset.theme = "dark";
+        moonIcon.classList.remove("active");
+        sunIcon.classList.add("active");
       }
     }
   }, [theme]);
