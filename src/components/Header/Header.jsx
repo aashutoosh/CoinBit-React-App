@@ -1,3 +1,9 @@
+import { useEffect, useState } from "react";
+import {
+  getFromLocalStorage,
+  addToLocalStorage,
+  updateLocalStorage,
+} from "../../utils/localStorageUtils";
 import "./header.scss";
 
 function NavLogo() {
@@ -66,10 +72,10 @@ function Links() {
   );
 }
 
-function Icons() {
+function Icons(props) {
   return (
     <div className="nav__icons">
-      <div className="nav__theme">
+      <div className="nav__theme" onClick={props.themeToggle}>
         {/* Moon Icon */}
         <svg
           className="icon icon-moon active"
@@ -111,13 +117,40 @@ function Icons() {
 }
 
 export default function Header() {
+  const [theme, setTheme] = useState(getFromLocalStorage("theme") || "dark");
+
+  useEffect(() => {
+    const html = document.querySelector("html");
+    const moonIcon = document.querySelector(".nav__theme .icon-moon");
+    const sunIcon = document.querySelector(".nav__theme .icon-sun");
+
+    addToLocalStorage("theme", theme);
+
+    const currentTheme = html.getAttribute("data-theme");
+    if (currentTheme !== theme) {
+      if (currentTheme === "light") {
+        html.dataset.theme = "dark";
+        moonIcon.classList.remove("active");
+        sunIcon.classList.add("active");
+      } else if (currentTheme === "dark") {
+        html.dataset.theme = "light";
+        sunIcon.classList.remove("active");
+        moonIcon.classList.add("active");
+      }
+    }
+  }, [theme]);
+
+  const themeToggleHandler = () => {
+    setTheme(theme === "light" ? "dark" : "light");
+  };
+
   return (
     <header className="header" id="header">
       <NavContainer>
         <NavLogo />
         <NavLinks>
           <Links />
-          <Icons />
+          <Icons themeToggle={themeToggleHandler} />
         </NavLinks>
       </NavContainer>
     </header>
