@@ -4,7 +4,7 @@ import Header from "../components/Header/Header";
 // import SecondaryNotification from "../components/Notification/SecondaryNotification";
 // import NotificationWindow from "../components/Notification/NotificationWindow";
 // import NotificationList from "../components/Notification/NotificationList";
-// import Watchlist from "../components/Watchlist/Watchlist";
+import Watchlist from "../components/Watchlist/Watchlist";
 // import AlertSection from "../components/AlertsSection/AlertSection";
 // import SettingsSection from "../components/SettingsSection/SettingsSection";
 // import AboutSection from "../components/AboutSection/AboutSection";
@@ -15,16 +15,16 @@ const Layout = () => {
   return (
     <>
       <Header />
-      {/* <PrimaryNotification />
-      <AlertModal />
+      {/* <PrimaryNotification /> */}
+      {/* <AlertModal /> */}
 
-      <main>
-        <NotificationList />
+      <main className="main container">
+        {/* <NotificationList /> */}
         <Watchlist />
-        <AlertSection />
-        <SettingsSection />
-        <AboutSection />
-      </main> */}
+        {/* <AlertSection /> */}
+        {/* <SettingsSection /> */}
+        {/* <AboutSection /> */}
+      </main>
     </>
   );
 };
