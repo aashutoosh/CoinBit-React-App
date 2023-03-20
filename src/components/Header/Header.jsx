@@ -1,21 +1,12 @@
 import { useEffect, useState } from "react";
-import {
-  getFromLocalStorage,
-  addToLocalStorage,
-} from "../../utils/localStorageUtils";
+import { getFromLocalStorage, addToLocalStorage } from "../../utils/localStorageUtils";
 import "./header.scss";
 
 function NavLogo() {
   return (
     <div className="nav__left">
       <a className="nav__logo" href="/">
-        <svg
-          className="nav__logo--icon"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          width={36}
-          height={36}
-        >
+        <svg className="nav__logo--icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={36} height={36}>
           <path fill="none" d="M0 0h24v24H0z" />
           <path
             d="M23 12v2c0 3.314-4.925 6-11 6-5.967 0-10.824-2.591-10.995-5.823L1 14v-2c0 3.314 4.925 6 11 6s11-2.686 11-6zM12 4c6.075 0 11 2.686 11 6s-4.925 6-11 6-11-2.686-11-6 4.925-6 11-6z"
@@ -76,13 +67,7 @@ function Icons(props) {
     <div className="nav__icons">
       <div className="nav__theme" onClick={props.themeToggle}>
         {/* Moon Icon */}
-        <svg
-          className="icon icon-moon"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          width={16}
-          height={16}
-        >
+        <svg className="icon icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={16} height={16}>
           <path fill="none" d="M0 0h24v24H0z" />
           <path d="M10 7a7 7 0 0 0 12 4.9v.1c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2h.1A6.979 6.979 0 0 0 10 7zm-6 5a8 8 0 0 0 15.062 3.762A9 9 0 0 1 8.238 4.938 7.999 7.999 0 0 0 4 12z" />
         </svg>
@@ -99,13 +84,7 @@ function Icons(props) {
         </svg>
       </div>
       <div className="nav__notification">
-        <svg
-          className=""
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          width={16}
-          height={16}
-        >
+        <svg className="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={16} height={16}>
           <path fill="none" d="M0 0h24v24H0z" />
           <path d="M20 17h2v2H2v-2h2v-7a8 8 0 1 1 16 0v7zm-2 0v-7a6 6 0 1 0-12 0v7h12zm-9 4h6v2H9v-2z" />
         </svg>

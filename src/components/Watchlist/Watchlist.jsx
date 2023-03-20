@@ -1,9 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
+import { fetchAllSymbols } from "../../binance";
 import { BINANCE_EXCHANGE_URL } from "../../config";
-import {
-  addToLocalStorage,
-  getFromLocalStorage,
-} from "../../utils/localStorageUtils";
+import { addToLocalStorage, getFromLocalStorage, updateLocalStorage } from "../../utils/localStorageUtils";
 import SearchResults from "../SearchResult/SearchResult";
 import "./watchlist.scss";
 
@@ -11,13 +9,7 @@ function WatchlistSearchInput({ queryString, inputHandler, searchInputRef }) {
   return (
     <div className="watchlist__search" ref={searchInputRef}>
       <span>
-        <svg
-          className=""
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          width={14}
-          height={14}
-        >
+        <svg className="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={14} height={14}>
           <path fill="none" d="M0 0h24v24H0z" />
           <path
             d="M18.031 16.617l4.283 4.282-1.415 1.415-4.282-4.283A8.96 8.96 0 0 1 11 20c-4.968 0-9-4.032-9-9s4.032-9 9-9 9 4.032 9 9a8.96 8.96 0 0 1-1.969 5.617zm-2.006-.742A6.977 6.977 0 0 0 18 11c0-3.868-3.133-7-7-7-3.868 0-7 3.132-7 7 0 3.867 3.132 7 7 7a6.977 6.977 0 0 0 4.875-1.975l.15-.15z"
@@ -36,7 +28,7 @@ function WatchlistSearchInput({ queryString, inputHandler, searchInputRef }) {
   );
 }
 
-function WatchlistItems({ watchlistSymbols }) {
+function WatchlistItems({ watchlistSymbols, deleteItems }) {
   const watchlistItems = watchlistSymbols.map((symbol) => {
     return (
       <li className="watchlist__item symbol " key={symbol}>
@@ -55,15 +47,17 @@ function WatchlistItems({ watchlistSymbols }) {
       </li>
     );
   });
-  return <ul className="watchlist__items">{watchlistItems}</ul>;
+  return (
+    <ul className="watchlist__items" onClick={deleteItems}>
+      {watchlistItems}
+    </ul>
+  );
 }
 
 export default function Watchlist() {
   const [queryString, setQueryString] = useState("");
   const [exchangeSymbols, setExchangeSymbols] = useState([]);
-  const [watchlistSymbols, setWatchlistSymbols] = useState(
-    getFromLocalStorage("watchlist") || []
-  );
+  const [watchlistSymbols, setWatchlistSymbols] = useState(getFromLocalStorage("watchlist") || []);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const searchInputRef = useRef(null);
   const searchResultRef = useRef(null);
@@ -73,19 +67,6 @@ export default function Watchlist() {
     setShowSearchResults(true);
   };
 
-  const fetchAllSymbols = async () => {
-    try {
-      const response = await fetch(BINANCE_EXCHANGE_URL);
-      const data = await response.json();
-      const symbols = data.symbols.map((symbol) => symbol.symbol);
-
-      // Update State
-      setExchangeSymbols(symbols);
-    } catch (error) {
-      console.error(`Error fetching symbols from binance exchange: ${error}`);
-    }
-  };
-
   const addToWatchlistHandler = (symbol) => {
     if (!watchlistSymbols.includes(symbol)) {
       setWatchlistSymbols((prevSymbols) => [...prevSymbols, symbol]);
@@ -93,16 +74,24 @@ export default function Watchlist() {
     }
   };
 
+  const deleteFromWatchlistHandler = (event) => {
+    if (event.target.classList.contains("delete")) {
+      const listElement = event.target.closest(".watchlist__item");
+      const selectedSymbol = listElement.querySelector(".symbol__name").textContent;
+      const filteredSymbols = watchlistSymbols.filter((symbol) => symbol !== selectedSymbol);
+      console.log(filteredSymbols, selectedSymbol);
+
+      updateLocalStorage("watchlist", filteredSymbols);
+      setWatchlistSymbols((prevSymbols) => prevSymbols.filter((symbol) => symbol !== selectedSymbol));
+    }
+  };
+
   useEffect(() => {
-    fetchAllSymbols();
+    fetchAllSymbols().then((fetchedSymbols) => setExchangeSymbols(fetchedSymbols));
 
     // Hides searchResults when clicked outside of searchInput or searchResults
     document.addEventListener("mousedown", (event) => {
-      if (
-        searchInputRef.current?.contains(event.target) ||
-        searchResultRef.current?.contains(event.target)
-      )
-        return;
+      if (searchInputRef.current?.contains(event.target) || searchResultRef.current?.contains(event.target)) return;
 
       setShowSearchResults(false);
       setQueryString("");
@@ -126,7 +115,7 @@ export default function Watchlist() {
         />
       )}
 
-      <WatchlistItems watchlistSymbols={watchlistSymbols} />
+      <WatchlistItems watchlistSymbols={watchlistSymbols} deleteItems={deleteFromWatchlistHandler} />
     </section>
   );
 }

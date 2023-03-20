@@ -7,9 +7,7 @@ export default function SearchResults({
   searchResultRef,
   onAddButtonClick,
 }) {
-  const filteredSymbols = allSymbols.filter(
-    (symbol) => symbol.indexOf(searchQuery.toUpperCase()) !== -1
-  );
+  const filteredSymbols = allSymbols.filter((symbol) => symbol.indexOf(searchQuery.toUpperCase()) !== -1);
 
   const handleClick = (event) => {
     const button = event.target.closest(".button__item");
