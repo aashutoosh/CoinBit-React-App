@@ -1,0 +1,28 @@
+.secondary__notification {
+    position: fixed;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+    font-size: 0.9rem;
+    gap: 0.5rem;
+    bottom: 5rem;
+    right: 50%;
+    z-index: var(--z-modal);
+    transform: translateX(50%);
+    background-color: var(--background-300);
+    border: 1px solid var(--background-100);
+    padding: 0.5rem 1.5rem;
+    border-radius: 5rem;
+
+    @media screen and (max-width: 575px) {
+        width: max-content;
+    }
+
+    &.show {
+        animation: slideIn 0.3s ease-in-out;
+    }
+
+    &.hide {
+        animation: slideOut 0.3s ease-in-out;
+    }
+}
