@@ -53,7 +53,7 @@ function WatchlistItems({ watchlistSymbols, deleteItems }) {
   );
 }
 
-export default function Watchlist({ secondaryNotification }) {
+export default function Watchlist({ secondaryNotification, createAlert }) {
   const [queryString, setQueryString] = useState("");
   const [exchangeSymbols, setExchangeSymbols] = useState([]);
   const [watchlistSymbols, setWatchlistSymbols] = useState(getFromLocalStorage("watchlist") || []);
@@ -83,6 +83,13 @@ export default function Watchlist({ secondaryNotification }) {
 
       updateLocalStorage("watchlist", filteredSymbols);
       setWatchlistSymbols((prevSymbols) => prevSymbols.filter((symbol) => symbol !== selectedSymbol));
+    } else if (event.target.classList.contains("createNewAlert")) {
+      const listElement = event.target.closest(".watchlist__item");
+      const selectedSymbol = listElement.querySelector(".symbol__name").textContent;
+      createAlert({
+        type: "create",
+        symbol: selectedSymbol,
+      });
     }
   };
 

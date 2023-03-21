@@ -1,5 +1,5 @@
 import Header from "../components/Header/Header";
-// import AlertModal from "../components/AlertModal/AlertModal";
+import AlertModal from "../components/AlertModal/AlertModal";
 // import PrimaryNotification from "../components/Notification/PrimaryNotification";
 import SecondaryNotification from "../components/Notification/SecondaryNotification";
 // import NotificationWindow from "../components/Notification/NotificationWindow";
@@ -13,9 +13,14 @@ import React, { useState } from "react";
 
 const Layout = () => {
   const [secNotf, setSecNotf] = useState({});
+  const [alertModal, setAlertModal] = useState({});
 
   const secNotfHandler = (message, icon = "ri-notification-4-line") => {
     setSecNotf({ message, icon });
+  };
+
+  const createAlertHandler = (alertObject) => {
+    setAlertModal(alertObject);
   };
 
   return (
@@ -23,11 +28,11 @@ const Layout = () => {
       <Header />
       {/* <PrimaryNotification /> */}
       <SecondaryNotification message={secNotf.message} icon={secNotf.icon} />
-      {/* <AlertModal /> */}
+      <AlertModal modalObject={alertModal} />
 
       <main className="main container">
         {/* <NotificationList /> */}
-        <Watchlist secondaryNotification={secNotfHandler} />
+        <Watchlist secondaryNotification={secNotfHandler} createAlert={createAlertHandler} />
         {/* <AlertSection /> */}
         {/* <SettingsSection /> */}
         {/* <AboutSection /> */}
