@@ -53,7 +53,7 @@ function WatchlistItems({ watchlistSymbols, deleteItems }) {
   );
 }
 
-export default function Watchlist({ secondaryNotification, createAlert }) {
+export default function Watchlist({ secondaryNotification, createAlert, activeSection }) {
   const [queryString, setQueryString] = useState("");
   const [exchangeSymbols, setExchangeSymbols] = useState([]);
   const [watchlistSymbols, setWatchlistSymbols] = useState(getFromLocalStorage("watchlist") || []);
@@ -106,7 +106,7 @@ export default function Watchlist({ secondaryNotification, createAlert }) {
   }, []);
 
   return (
-    <section className="watchlist leftside" id="watchlist">
+    <section className={`watchlist leftside ${activeSection === "watchlist" ? "showsection" : ""}`} id="watchlist">
       <WatchlistSearchInput
         queryString={queryString}
         inputHandler={searchInputHandler}
