@@ -1,20 +1,35 @@
 import React, { useEffect, useRef, useState } from "react";
+import { getUniqueSymbols } from "../../utils/helper";
+import { addToLocalStorage, getFromLocalStorage, updateLocalStorage } from "../../utils/localStorageUtils";
 import "./alertModal.scss";
+
+function AllSymbolsOptions() {
+  const allSymbols = getUniqueSymbols();
+  const symbolsOption = allSymbols.map((symbol) => (
+    <option value={symbol} key={symbol}>
+      {symbol}
+    </option>
+  ));
+
+  return symbolsOption;
+}
 
 export default function AlertModal({ modalObject }) {
   const initialFormData = {
     title: "",
     description: "",
-    symbol: "",
-    condition: "",
+    symbol: modalObject.symbol,
+    condition: ">=",
     price: "",
   };
+
   const [isVisible, setIsVisible] = useState(false);
   const [formData, setFormData] = useState(initialFormData);
   const modalRef = useRef(null);
 
   const showModal = () => {
     setIsVisible(true);
+    setFormData(initialFormData);
     setTimeout(() => {
       modalRef.current.classList.remove("show");
       modalRef.current.classList.add("show");
@@ -25,7 +40,6 @@ export default function AlertModal({ modalObject }) {
     modalRef.current.classList.remove("show");
     setTimeout(() => {
       setIsVisible(false);
-      setFormData(initialFormData);
     }, 100);
   };
 
@@ -47,6 +61,13 @@ export default function AlertModal({ modalObject }) {
       ...formData,
       createdon: Date.now(),
     };
+
+    const pendingAlerts = getFromLocalStorage("pendingAlerts");
+    if (pendingAlerts) {
+      updateLocalStorage("pendingAlerts", [...pendingAlerts, alertObject]);
+    } else {
+      addToLocalStorage("pendingAlerts", [alertObject]);
+    }
 
     console.log(alertObject);
 
@@ -95,9 +116,9 @@ export default function AlertModal({ modalObject }) {
                 onChange={handleInputChange}
                 value={formData.symbol}
                 id="modalSymbolSelect"
-              ></select>
-              {/* <option value="${symbol}">${symbol}</option> */}
-              {/* <option value="${symbol}" selected>${symbol}</option> */}
+              >
+                <AllSymbolsOptions />
+              </select>
               <label htmlFor="modalSymbolSelect" className="label alertmodal__form--symbol">
                 Symbol
               </label>
