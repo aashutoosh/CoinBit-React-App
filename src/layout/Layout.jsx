@@ -5,7 +5,7 @@ import SecondaryNotification from "../components/Notification/SecondaryNotificat
 // import NotificationWindow from "../components/Notification/NotificationWindow";
 // import NotificationList from "../components/Notification/NotificationList";
 import Watchlist from "../components/Watchlist/Watchlist";
-// import AlertSection from "../components/AlertsSection/AlertSection";
+import AlertSection from "../components/AlertsSection/AlertSection";
 // import SettingsSection from "../components/SettingsSection/SettingsSection";
 // import AboutSection from "../components/AboutSection/AboutSection";
 
@@ -42,7 +42,7 @@ const Layout = () => {
           createAlert={createAlertHandler}
           activeSection={activeSection}
         />
-        {/* <AlertSection /> */}
+        <AlertSection />
         {/* <SettingsSection /> */}
         {/* <AboutSection /> */}
       </main>
