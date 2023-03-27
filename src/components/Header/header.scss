@@ -55,6 +55,7 @@ header {
             padding-right: 1rem;
             border-right: 1px solid var(--border);
 
+
             a {
                 display: flex;
                 flex-direction: column-reverse;
@@ -94,7 +95,7 @@ header {
     &__link {
         font-size: var(--small-font-size);
         padding-right: 1rem;
-        transition: all 0.3s;
+        transition: background-color 0.3s;
 
         &:hover {
             color: var(--primary-100);
