@@ -95,7 +95,7 @@ header {
     &__link {
         font-size: var(--small-font-size);
         padding-right: 1rem;
-        transition: background-color 0.3s;
+        transition: color 0.3s;
 
         &:hover {
             color: var(--primary-100);

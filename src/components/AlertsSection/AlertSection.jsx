@@ -109,7 +109,7 @@ function EmptyText() {
   );
 }
 
-export default function AlertSection({ createAlert }) {
+export default function AlertSection({ createAlert, activeSection }) {
   const [allAlerts, setAllAlerts] = useState([]);
   const [alertsType, setAlertsType] = useState("pending");
 
@@ -122,7 +122,7 @@ export default function AlertSection({ createAlert }) {
   }, [alertsType]);
 
   return (
-    <section className="alerts rightside showsection" id="alerts">
+    <section className={`alerts rightside ${activeSection === "alerts" ? "showsection" : ""}`} id="alerts">
       <Heading tabChange={(tabType) => setAlertsType(tabType)} createAlert={createAlert} />
       <Table allAlerts={allAlerts} alertsType={alertsType} />
       {allAlerts.length === 0 && alertsType === "pending" && <EmptyText />}
