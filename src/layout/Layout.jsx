@@ -42,7 +42,7 @@ const Layout = () => {
           createAlert={createAlertHandler}
           activeSection={activeSection}
         />
-        <AlertSection />
+        <AlertSection createAlert={createAlertHandler} />
         {/* <SettingsSection /> */}
         {/* <AboutSection /> */}
       </main>

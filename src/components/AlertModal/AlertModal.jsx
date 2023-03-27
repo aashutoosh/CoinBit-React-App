@@ -57,8 +57,15 @@ export default function AlertModal({ modalObject }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
+    const form = event.target;
+    const formData = new FormData(form);
     const alertObject = {
-      ...formData,
+      title: formData.get("title"),
+      description: formData.get("description"),
+      symbol: formData.get("symbol"),
+      condition: formData.get("condition"),
+      price: formData.get("price"),
       createdon: Date.now(),
     };
 
@@ -114,7 +121,7 @@ export default function AlertModal({ modalObject }) {
                 name="symbol"
                 className="select symbol"
                 onChange={handleInputChange}
-                value={formData.symbol}
+                value={formData.symbol || getUniqueSymbols()?.[0]}
                 id="modalSymbolSelect"
               >
                 <AllSymbolsOptions />

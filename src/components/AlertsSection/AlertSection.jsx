@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { getFromLocalStorage } from "../../utils/localStorageUtils";
 import "./alertSection.scss";
 
-function Heading({ tabChange }) {
+function Heading({ tabChange, createAlert }) {
   const pendingTab = useRef(null);
   const triggeredTab = useRef(null);
 
@@ -19,6 +19,13 @@ function Heading({ tabChange }) {
     }
   };
 
+  const createNewAlert = () => {
+    createAlert({
+      type: "create",
+      symbol: "",
+    });
+  };
+
   return (
     <div className="heading">
       <div className="heading__window">
@@ -31,8 +38,10 @@ function Heading({ tabChange }) {
           Triggered
         </h2>
       </div>
-      <button className="alerts__create--button text">Create Alert</button>
-      <button className="alerts__create--button icon">
+      <button className="alerts__create--button text" onClick={createNewAlert}>
+        Create Alert
+      </button>
+      <button className="alerts__create--button icon" onClick={createNewAlert}>
         <i className="ri-add-line" />
       </button>
     </div>
@@ -103,10 +112,8 @@ function EmptyText() {
 export default function AlertSection({ createAlert }) {
   const [allAlerts, setAllAlerts] = useState([]);
   const [alertsType, setAlertsType] = useState("pending");
-  console.log("alertSection");
 
   useEffect(() => {
-    console.log("useEffect");
     if (alertsType === "pending") {
       setAllAlerts(getFromLocalStorage("pendingAlerts") || []);
     } else {
@@ -116,7 +123,7 @@ export default function AlertSection({ createAlert }) {
 
   return (
     <section className="alerts rightside showsection" id="alerts">
-      <Heading tabChange={(tabType) => setAlertsType(tabType)} />
+      <Heading tabChange={(tabType) => setAlertsType(tabType)} createAlert={createAlert} />
       <Table allAlerts={allAlerts} alertsType={alertsType} />
       {allAlerts.length === 0 && alertsType === "pending" && <EmptyText />}
     </section>
