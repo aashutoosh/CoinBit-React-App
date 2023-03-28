@@ -112,20 +112,27 @@ function EmptyText() {
 export default function AlertSection({ createAlert, activeSection }) {
   const [allAlerts, setAllAlerts] = useState([]);
   const [alertsType, setAlertsType] = useState("pending");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (alertsType === "pending") {
-      setAllAlerts(getFromLocalStorage("pendingAlerts") || []);
-    } else {
-      setAllAlerts(getFromLocalStorage("triggeredAlerts") || []);
+    async function fetchData() {
+      setIsLoading(true);
+      if (alertsType === "pending") {
+        setAllAlerts((await getFromLocalStorage("pendingAlerts")) || []);
+      } else {
+        setAllAlerts((await getFromLocalStorage("triggeredAlerts")) || []);
+      }
+      setIsLoading(false);
     }
+    fetchData();
   }, [alertsType]);
 
   return (
     <section className={`alerts rightside ${activeSection === "alerts" ? "showsection" : ""}`} id="alerts">
       <Heading tabChange={(tabType) => setAlertsType(tabType)} createAlert={createAlert} />
-      <Table allAlerts={allAlerts} alertsType={alertsType} />
-      {allAlerts.length === 0 && alertsType === "pending" && <EmptyText />}
+      {isLoading && <div>Loading...</div>}
+      {!isLoading && allAlerts.length > 0 && <Table allAlerts={allAlerts} alertsType={alertsType} />}
+      {!isLoading && allAlerts.length === 0 && alertsType === "pending" && <EmptyText />}
     </section>
   );
 }
