@@ -48,7 +48,7 @@ function Heading({ tabChange, createAlert }) {
   );
 }
 
-function AlertRow({ alert, pendingAlertsType }) {
+function AlertRow({ alert, pendingAlertsType, actionHandler }) {
   return (
     <tr className="row" data-key={alert.createdon}>
       <td>
@@ -59,8 +59,10 @@ function AlertRow({ alert, pendingAlertsType }) {
       </td>
       <td>
         <div className="control__buttons">
-          {pendingAlertsType && <i className="control__buttons--edit ri-pencil-line"></i>}
-          <i className="control__buttons--delete ri-close-line"></i>
+          {pendingAlertsType && (
+            <i className="control__buttons--edit ri-pencil-line" onClick={() => actionHandler("edit", alert)}></i>
+          )}
+          <i className="control__buttons--delete ri-close-line" onClick={() => actionHandler("delete", alert)}></i>
         </div>
       </td>
       <td>
@@ -75,8 +77,23 @@ function AlertRow({ alert, pendingAlertsType }) {
   );
 }
 
-function Table({ allAlerts, alertsType }) {
+function Table({ alerts, alertsType, dispatchAlerts, createAlert }) {
   const pendingAlertsType = alertsType === "pending";
+
+  const actionHandler = (type, alert) => {
+    if (type === "edit") {
+      createAlert({
+        type: "update",
+        payload: alert,
+      });
+    } else if (type === "delete") {
+      dispatchAlerts({
+        type: "DELETE_ALERT",
+        isPending: pendingAlertsType,
+        payload: alert,
+      });
+    }
+  };
 
   return (
     <div className="table__container">
@@ -91,8 +108,13 @@ function Table({ allAlerts, alertsType }) {
           </tr>
         </thead>
         <tbody className="alerts__table--tbody">
-          {allAlerts.map((alert) => (
-            <AlertRow key={alert.createdon} alert={alert} pendingAlertsType={pendingAlertsType} />
+          {alerts.map((alert) => (
+            <AlertRow
+              key={alert.createdon}
+              alert={alert}
+              pendingAlertsType={pendingAlertsType}
+              actionHandler={actionHandler}
+            />
           ))}
         </tbody>
       </table>
@@ -109,30 +131,17 @@ function EmptyText() {
   );
 }
 
-export default function AlertSection({ createAlert, activeSection }) {
-  const [allAlerts, setAllAlerts] = useState([]);
+export default function AlertSection({ createAlert, activeSection, allAlerts, dispatchAlerts }) {
   const [alertsType, setAlertsType] = useState("pending");
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchData() {
-      setIsLoading(true);
-      if (alertsType === "pending") {
-        setAllAlerts((await getFromLocalStorage("pendingAlerts")) || []);
-      } else {
-        setAllAlerts((await getFromLocalStorage("triggeredAlerts")) || []);
-      }
-      setIsLoading(false);
-    }
-    fetchData();
-  }, [alertsType]);
+  const alerts = alertsType === "pending" ? allAlerts.pendingAlerts : allAlerts.triggeredAlerts;
 
   return (
     <section className={`alerts rightside ${activeSection === "alerts" ? "showsection" : ""}`} id="alerts">
       <Heading tabChange={(tabType) => setAlertsType(tabType)} createAlert={createAlert} />
-      {isLoading && <div>Loading...</div>}
-      {!isLoading && allAlerts.length > 0 && <Table allAlerts={allAlerts} alertsType={alertsType} />}
-      {!isLoading && allAlerts.length === 0 && alertsType === "pending" && <EmptyText />}
+      {alerts.length > 0 && (
+        <Table alerts={alerts} alertsType={alertsType} createAlert={createAlert} dispatchAlerts={dispatchAlerts} />
+      )}
+      {alerts.length === 0 && alertsType === "pending" && <EmptyText />}
     </section>
   );
 }

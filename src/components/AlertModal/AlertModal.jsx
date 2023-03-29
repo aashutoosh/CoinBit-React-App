@@ -14,13 +14,14 @@ function AllSymbolsOptions() {
   return symbolsOption;
 }
 
-export default function AlertModal({ modalObject }) {
+export default function AlertModal({ modalObject, dispatchAlerts }) {
+  const updateAlert = modalObject.type === "update";
   const initialFormData = {
-    title: "",
-    description: "",
-    symbol: modalObject.symbol,
-    condition: ">=",
-    price: "",
+    title: updateAlert ? modalObject.payload.title : "",
+    description: updateAlert ? modalObject.payload.description : "",
+    symbol: updateAlert ? modalObject.payload.symbol : modalObject.symbol,
+    condition: updateAlert ? modalObject.payload.condition : ">=",
+    price: updateAlert ? modalObject.payload.price : "",
   };
 
   const [isVisible, setIsVisible] = useState(false);
@@ -69,14 +70,18 @@ export default function AlertModal({ modalObject }) {
       createdon: Date.now(),
     };
 
-    const pendingAlerts = getFromLocalStorage("pendingAlerts");
-    if (pendingAlerts) {
-      updateLocalStorage("pendingAlerts", [...pendingAlerts, alertObject]);
+    if (updateAlert) {
+      dispatchAlerts({
+        type: "UPDATE_ALERT",
+        payload: alertObject,
+        alertKey: modalObject.payload.createdon,
+      });
     } else {
-      addToLocalStorage("pendingAlerts", [alertObject]);
+      dispatchAlerts({
+        type: "ADD_ALERT",
+        payload: alertObject,
+      });
     }
-
-    console.log(alertObject);
 
     hideModal();
   };

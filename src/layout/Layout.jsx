@@ -9,12 +9,21 @@ import AlertSection from "../components/AlertsSection/AlertSection";
 // import SettingsSection from "../components/SettingsSection/SettingsSection";
 // import AboutSection from "../components/AboutSection/AboutSection";
 
-import React, { useState } from "react";
+import alertsReducer from "../reducers/alertsReducer";
 
-const Layout = () => {
+import React, { useReducer, useState } from "react";
+import { getFromLocalStorage } from "../utils/localStorageUtils";
+
+export default function Layout() {
   const [secNotf, setSecNotf] = useState({});
   const [alertModal, setAlertModal] = useState({});
   const [activeSection, setActiveSection] = useState("alerts");
+  const initialAlerts = {
+    pendingAlerts: getFromLocalStorage("pendingAlerts") || [],
+    triggeredAlerts: getFromLocalStorage("triggeredAlerts") || [],
+  };
+
+  const [allAlerts, dispatchAlerts] = useReducer(alertsReducer, initialAlerts);
 
   const secNotfHandler = (message, icon = "ri-notification-4-line") => {
     setSecNotf({ message, icon });
@@ -33,7 +42,7 @@ const Layout = () => {
       <Header activeSectionHandler={activeSectionHandler} />
       {/* <PrimaryNotification /> */}
       <SecondaryNotification message={secNotf.message} icon={secNotf.icon} />
-      <AlertModal modalObject={alertModal} />
+      <AlertModal modalObject={alertModal} dispatchAlerts={dispatchAlerts} />
 
       <main className="main container">
         {/* <NotificationList /> */}
@@ -42,11 +51,15 @@ const Layout = () => {
           createAlert={createAlertHandler}
           activeSection={activeSection}
         />
-        <AlertSection createAlert={createAlertHandler} activeSection={activeSection} />
+        <AlertSection
+          createAlert={createAlertHandler}
+          activeSection={activeSection}
+          allAlerts={allAlerts}
+          dispatchAlerts={dispatchAlerts}
+        />
         {/* <SettingsSection /> */}
         {/* <AboutSection /> */}
       </main>
     </>
   );
-};
-export default Layout;
+}
