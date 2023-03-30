@@ -10,6 +10,7 @@ export default function alertsReducer(currentAlerts, action) {
         case 'ADD_ALERT':
             updatedPendingAlerts = [action.payload, ...pendingAlerts];
             updateLocalStorage('pendingAlerts', updatedPendingAlerts);
+            action.secondaryNotification('Alert Created!', 'ri-checkbox-circle-line');
 
             return { ...currentAlerts, pendingAlerts: updatedPendingAlerts };
 
@@ -29,6 +30,7 @@ export default function alertsReducer(currentAlerts, action) {
             filteredPendingAlerts = pendingAlerts.filter(alert => alert.createdon !== action.alertKey);
             updatedPendingAlerts = [action.payload, ...filteredPendingAlerts];
             updateLocalStorage('pendingAlerts', updatedPendingAlerts);
+            action.secondaryNotification('Alert Updated!', 'ri-edit-2-line');
 
             return { ...currentAlerts, pendingAlerts: updatedPendingAlerts };
 
@@ -37,6 +39,7 @@ export default function alertsReducer(currentAlerts, action) {
             const alertsArray = action.isPending ? 'pendingAlerts' : 'triggeredAlerts';
             const updatedAlerts = currentAlerts[alertsArray].filter(alert => alert.createdon !== action.payload.createdon);
             updateLocalStorage(alertsArray, updatedAlerts);
+            action.secondaryNotification(`${action.isPending ? 'Pending' : 'Triggered'} alert deleted!`, 'ri-delete-bin-6-line');
 
             return { ...currentAlerts, [alertsArray]: updatedAlerts };
 

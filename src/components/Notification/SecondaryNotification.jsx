@@ -3,7 +3,7 @@ import { SECONDARY_NOTIFICATION_SEC } from "../../config";
 
 import "./secondaryNotification.scss";
 
-export default function SecondaryNotification({ message, icon }) {
+export default function SecondaryNotification({ message = "", icon = "ri-notification-4-line" }) {
   const [isVisible, setIsVisible] = useState(false);
   const notfElement = useRef(null);
 

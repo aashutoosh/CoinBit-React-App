@@ -1,5 +1,6 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import { fetchAllSymbols } from "../../binance";
+import { SecondaryNotificationsContext } from "../../context/secondaryNotificationsContext";
 import { addToLocalStorage, getFromLocalStorage, updateLocalStorage } from "../../utils/localStorageUtils";
 import SearchResults from "../SearchResult/SearchResult";
 import "./watchlist.scss";
@@ -53,7 +54,8 @@ function WatchlistItems({ watchlistSymbols, deleteItems }) {
   );
 }
 
-export default function Watchlist({ secondaryNotification, createAlert, activeSection }) {
+export default function Watchlist({ createAlert, activeSection }) {
+  const { secondaryNotification } = useContext(SecondaryNotificationsContext);
   const [queryString, setQueryString] = useState("");
   const [exchangeSymbols, setExchangeSymbols] = useState([]);
   const [watchlistSymbols, setWatchlistSymbols] = useState(getFromLocalStorage("watchlist") || []);

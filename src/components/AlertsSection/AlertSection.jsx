@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import { getFromLocalStorage } from "../../utils/localStorageUtils";
+import React, { useContext, useRef, useState } from "react";
+import { SecondaryNotificationsContext } from "../../context/secondaryNotificationsContext";
 import "./alertSection.scss";
 
 function Heading({ tabChange, createAlert }) {
@@ -78,6 +78,7 @@ function AlertRow({ alert, pendingAlertsType, actionHandler }) {
 }
 
 function Table({ alerts, alertsType, dispatchAlerts, createAlert }) {
+  const { secondaryNotification } = useContext(SecondaryNotificationsContext);
   const pendingAlertsType = alertsType === "pending";
 
   const actionHandler = (type, alert) => {
@@ -91,6 +92,7 @@ function Table({ alerts, alertsType, dispatchAlerts, createAlert }) {
         type: "DELETE_ALERT",
         isPending: pendingAlertsType,
         payload: alert,
+        secondaryNotification,
       });
     }
   };

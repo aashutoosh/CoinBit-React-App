@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { SecondaryNotificationsContext } from "../../context/secondaryNotificationsContext";
 import { getUniqueSymbols } from "../../utils/helper";
-import { addToLocalStorage, getFromLocalStorage, updateLocalStorage } from "../../utils/localStorageUtils";
 import "./alertModal.scss";
 
 function AllSymbolsOptions() {
@@ -15,6 +15,7 @@ function AllSymbolsOptions() {
 }
 
 export default function AlertModal({ modalObject, dispatchAlerts }) {
+  const { secondaryNotification } = useContext(SecondaryNotificationsContext);
   const updateAlert = modalObject.type === "update";
   const initialFormData = {
     title: updateAlert ? modalObject.payload.title : "",
@@ -75,11 +76,13 @@ export default function AlertModal({ modalObject, dispatchAlerts }) {
         type: "UPDATE_ALERT",
         payload: alertObject,
         alertKey: modalObject.payload.createdon,
+        secondaryNotification,
       });
     } else {
       dispatchAlerts({
         type: "ADD_ALERT",
         payload: alertObject,
+        secondaryNotification,
       });
     }
 

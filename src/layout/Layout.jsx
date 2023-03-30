@@ -9,13 +9,14 @@ import AlertSection from "../components/AlertsSection/AlertSection";
 // import SettingsSection from "../components/SettingsSection/SettingsSection";
 // import AboutSection from "../components/AboutSection/AboutSection";
 
-import alertsReducer from "../reducers/alertsReducer";
-
-import React, { useReducer, useState } from "react";
 import { getFromLocalStorage } from "../utils/localStorageUtils";
+import { SecondaryNotificationsProvider } from "../context/secondaryNotificationsContext";
+
+import alertsReducer from "../reducers/alertsReducer";
+import React, { useReducer, useState } from "react";
 
 export default function Layout() {
-  const [secNotf, setSecNotf] = useState({});
+  const [secondaryNotification, setSecondaryNotification] = useState({});
   const [alertModal, setAlertModal] = useState({});
   const [activeSection, setActiveSection] = useState("alerts");
   const initialAlerts = {
@@ -25,10 +26,6 @@ export default function Layout() {
 
   const [allAlerts, dispatchAlerts] = useReducer(alertsReducer, initialAlerts);
 
-  const secNotfHandler = (message, icon = "ri-notification-4-line") => {
-    setSecNotf({ message, icon });
-  };
-
   const createAlertHandler = (alertObject) => {
     setAlertModal(alertObject);
   };
@@ -37,20 +34,19 @@ export default function Layout() {
     setActiveSection(section);
   };
 
+  const secondaryNotificationHandler = (message, icon) => {
+    setSecondaryNotification({ message, icon });
+  };
+
   return (
-    <>
+    <SecondaryNotificationsProvider secondaryNotification={secondaryNotificationHandler}>
       <Header activeSectionHandler={activeSectionHandler} />
       {/* <PrimaryNotification /> */}
-      <SecondaryNotification message={secNotf.message} icon={secNotf.icon} />
+      <SecondaryNotification message={secondaryNotification.message} icon={secondaryNotification.icon} />
       <AlertModal modalObject={alertModal} dispatchAlerts={dispatchAlerts} />
-
       <main className="main container">
         {/* <NotificationList /> */}
-        <Watchlist
-          secondaryNotification={secNotfHandler}
-          createAlert={createAlertHandler}
-          activeSection={activeSection}
-        />
+        <Watchlist createAlert={createAlertHandler} activeSection={activeSection} />
         <AlertSection
           createAlert={createAlertHandler}
           activeSection={activeSection}
@@ -60,6 +56,6 @@ export default function Layout() {
         {/* <SettingsSection /> */}
         {/* <AboutSection /> */}
       </main>
-    </>
+    </SecondaryNotificationsProvider>
   );
 }
