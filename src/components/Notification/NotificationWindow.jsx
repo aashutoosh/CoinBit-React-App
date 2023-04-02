@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { addToLocalStorage, getFromLocalStorage, updateLocalStorage } from "../../utils/localStorageUtils";
 import "./notificationWindow.scss";
 
 function NotificationItem({ notf, removeNotification }) {
@@ -17,21 +18,31 @@ function NotificationItem({ notf, removeNotification }) {
 }
 
 export default function NotificationWindow({ primaryNotification, showWindow }) {
-  const [allNotifications, setAllNotifications] = useState([]);
+  const [allNotifications, setAllNotifications] = useState(getFromLocalStorage("notifications") || []);
   const notificationWindowRef = useRef(null);
 
   useEffect(() => {
     if (primaryNotification?.key) {
       setAllNotifications((prevNotifications) => [primaryNotification, ...prevNotifications]);
+
+      if (allNotifications.length === 0) {
+        addToLocalStorage("notifications", [primaryNotification, ...allNotifications]);
+      } else {
+        updateLocalStorage("notifications", [primaryNotification, ...allNotifications]);
+      }
     }
   }, [primaryNotification]);
 
   function clearWindow() {
     setAllNotifications([]);
+    updateLocalStorage("notifications", []);
   }
 
   function removeNotification(key) {
-    setAllNotifications(allNotifications.filter((notf) => notf.key !== key));
+    const filteredNotifications = allNotifications.filter((notf) => notf.key !== key);
+    setAllNotifications(filteredNotifications);
+
+    updateLocalStorage("notifications", filteredNotifications);
   }
   function handleClickInside(event) {
     event.stopPropagation();
