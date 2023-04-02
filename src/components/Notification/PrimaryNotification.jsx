@@ -40,25 +40,25 @@ export default function PrimaryNotification({ notification }) {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
-    if (notification?.id) {
+    if (notification?.key) {
       setItems((prevItems) => [...prevItems, notification]);
     }
   }, [notification]);
 
-  const handleClose = (id) => {
-    setItems((prevItems) => prevItems.filter((item) => item.id !== id));
+  const handleClose = (key) => {
+    setItems((prevItems) => prevItems.filter((item) => item.key !== key));
   };
 
   return (
     <div className="primary__notifications" id="primary__notifications">
       {items.map((item) => (
         <NotificationItem
-          key={item.id}
+          key={item.key}
           title={item.title}
           description={item.description}
           condition={item.condition}
           icon={item.icon}
-          onClose={() => handleClose(item.id)}
+          onClose={() => handleClose(item.key)}
         />
       ))}
     </div>
