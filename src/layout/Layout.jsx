@@ -53,6 +53,7 @@ export default function Layout() {
     <PrimaryNotificationsProvider primaryNotification={primaryNotificationHandler}>
       <SecondaryNotificationsProvider secondaryNotification={secondaryNotificationHandler}>
         <Header
+          primaryNotification={primaryNotification}
           activeSectionHandler={activeSectionHandler}
           onBellClick={toggleNotificationWindow}
           showNotificationWindow={showNotificationWindow}

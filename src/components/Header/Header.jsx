@@ -133,8 +133,22 @@ function Theme() {
   );
 }
 
-function Notification({ onBellClick, showNotificationWindow }) {
+function Notification({ primaryNotification, onBellClick, showNotificationWindow }) {
   const notificationBellRef = useRef(null);
+  const notificationLightRef = useRef(null);
+
+  const addNotificationLight = () => {
+    notificationLightRef.current.classList.add("active");
+  };
+
+  const removeNotificationLight = () => {
+    notificationLightRef.current.classList.remove("active");
+  };
+
+  const handleBellClick = () => {
+    onBellClick();
+    removeNotificationLight();
+  };
 
   useEffect(() => {
     function handleOutsideClick(event) {
@@ -152,18 +166,24 @@ function Notification({ onBellClick, showNotificationWindow }) {
     };
   }, [showNotificationWindow]);
 
+  useEffect(() => {
+    if (primaryNotification?.key) {
+      addNotificationLight();
+    }
+  }, [primaryNotification]);
+
   return (
-    <div className="nav__notification" onClick={onBellClick} ref={notificationBellRef}>
+    <div className="nav__notification" onClick={handleBellClick} ref={notificationBellRef}>
       <svg className="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={16} height={16}>
         <path fill="none" d="M0 0h24v24H0z" />
         <path d="M20 17h2v2H2v-2h2v-7a8 8 0 1 1 16 0v7zm-2 0v-7a6 6 0 1 0-12 0v7h12zm-9 4h6v2H9v-2z" />
       </svg>
-      <span className="nav__notification--light" />
+      <span className="nav__notification--light show" ref={notificationLightRef} />
     </div>
   );
 }
 
-export default function Header({ activeSectionHandler, onBellClick, showNotificationWindow }) {
+export default function Header({ primaryNotification, activeSectionHandler, onBellClick, showNotificationWindow }) {
   return (
     <header className="header" id="header">
       <nav className="nav container">
@@ -172,7 +192,11 @@ export default function Header({ activeSectionHandler, onBellClick, showNotifica
           <Links activeSection={activeSectionHandler} />
           <NavIcons>
             <Theme />
-            <Notification onBellClick={onBellClick} showNotificationWindow={showNotificationWindow} />
+            <Notification
+              primaryNotification={primaryNotification}
+              onBellClick={onBellClick}
+              showNotificationWindow={showNotificationWindow}
+            />
           </NavIcons>
         </NavLinks>
       </nav>
