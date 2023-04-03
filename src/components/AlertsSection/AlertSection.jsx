@@ -77,7 +77,7 @@ function AlertRow({ alert, pendingAlertsType, actionHandler }) {
   );
 }
 
-function Table({ alerts, alertsType, dispatchAlerts, createAlert }) {
+function Table({ alerts, alertsType, dispatchAlerts, createAlert, websocketActions }) {
   const { secondaryNotification } = useContext(SecondaryNotificationsContext);
   const pendingAlertsType = alertsType === "pending";
 
@@ -94,6 +94,8 @@ function Table({ alerts, alertsType, dispatchAlerts, createAlert }) {
         payload: alert,
         secondaryNotification,
       });
+
+      websocketActions.wsUnsubscribe(alert.symbol, "pendingAlerts");
     }
   };
 
@@ -133,7 +135,7 @@ function EmptyText() {
   );
 }
 
-export default function AlertSection({ createAlert, activeSection, allAlerts, dispatchAlerts }) {
+export default function AlertSection({ createAlert, activeSection, allAlerts, dispatchAlerts, websocketActions }) {
   const [alertsType, setAlertsType] = useState("pending");
   const alerts = alertsType === "pending" ? allAlerts.pendingAlerts : allAlerts.triggeredAlerts;
 
@@ -141,7 +143,13 @@ export default function AlertSection({ createAlert, activeSection, allAlerts, di
     <section className={`alerts rightside ${activeSection === "alerts" ? "showsection" : ""}`} id="alerts">
       <Heading tabChange={(tabType) => setAlertsType(tabType)} createAlert={createAlert} />
       {alerts.length > 0 && (
-        <Table alerts={alerts} alertsType={alertsType} createAlert={createAlert} dispatchAlerts={dispatchAlerts} />
+        <Table
+          alerts={alerts}
+          alertsType={alertsType}
+          createAlert={createAlert}
+          dispatchAlerts={dispatchAlerts}
+          websocketActions={websocketActions}
+        />
       )}
       {alerts.length === 0 && alertsType === "pending" && <EmptyText />}
     </section>

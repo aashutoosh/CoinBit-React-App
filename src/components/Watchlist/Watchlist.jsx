@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
 import { fetchAllSymbols } from "../../binance";
-import { SecondaryNotificationsContext } from "../../context/secondaryNotificationsContext";
 import { addToLocalStorage, getFromLocalStorage, updateLocalStorage } from "../../utils/localStorageUtils";
 import SearchResults from "../SearchResult/SearchResult";
 import "./watchlist.scss";
@@ -54,8 +53,7 @@ function WatchlistItems({ watchlistSymbols, deleteItems }) {
   );
 }
 
-export default function Watchlist({ createAlert, activeSection }) {
-  const { secondaryNotification } = useContext(SecondaryNotificationsContext);
+export default function Watchlist({ createAlert, activeSection, websocketActions }) {
   const [queryString, setQueryString] = useState("");
   const [exchangeSymbols, setExchangeSymbols] = useState([]);
   const [watchlistSymbols, setWatchlistSymbols] = useState(getFromLocalStorage("watchlist") || []);
@@ -72,7 +70,8 @@ export default function Watchlist({ createAlert, activeSection }) {
     if (!watchlistSymbols.includes(symbol)) {
       setWatchlistSymbols((prevSymbols) => [...prevSymbols, symbol]);
       addToLocalStorage("watchlist", [...watchlistSymbols, symbol]);
-      secondaryNotification(`Subscribed: ${symbol}`, "ri-checkbox-circle-line");
+
+      websocketActions.wsSubscribe(symbol);
     }
   };
 
@@ -81,7 +80,8 @@ export default function Watchlist({ createAlert, activeSection }) {
       const listElement = event.target.closest(".watchlist__item");
       const selectedSymbol = listElement.querySelector(".symbol__name").textContent;
       const filteredSymbols = watchlistSymbols.filter((symbol) => symbol !== selectedSymbol);
-      secondaryNotification(`Unsubscribed: ${selectedSymbol}`, "ri-delete-bin-line");
+
+      websocketActions.wsUnsubscribe(selectedSymbol, "watchlist");
 
       updateLocalStorage("watchlist", filteredSymbols);
       setWatchlistSymbols((prevSymbols) => prevSymbols.filter((symbol) => symbol !== selectedSymbol));

@@ -3,7 +3,6 @@ import { addToLocalStorage, getFromLocalStorage, updateLocalStorage } from "../.
 import "./notificationWindow.scss";
 
 function NotificationItem({ notf, removeNotification }) {
-  // console.log(notf);
   return (
     <li className="notification">
       <span className="notification__time">{notf.time}</span>
