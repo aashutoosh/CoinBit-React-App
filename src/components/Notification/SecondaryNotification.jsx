@@ -1,9 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { SECONDARY_NOTIFICATION_SEC } from "../../config";
 
 import "./secondaryNotification.scss";
 
-export default function SecondaryNotification({ message = "", icon = "ri-notification-4-line" }) {
+function SecondaryNotification({ notification }) {
+  const message = notification.message;
+  const icon = notification.icon ? notification.icon : "ri-notification-4-line";
   const [isVisible, setIsVisible] = useState(false);
   const notfElement = useRef(null);
 
@@ -45,3 +47,5 @@ export default function SecondaryNotification({ message = "", icon = "ri-notific
     </>
   );
 }
+
+export default React.memo(SecondaryNotification);

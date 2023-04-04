@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
 import { fetchAllSymbols } from "../../binance";
+import { WebSocketContext } from "../../context/websocketContext";
 import { addToLocalStorage, getFromLocalStorage, updateLocalStorage } from "../../utils/localStorageUtils";
 import SearchResults from "../SearchResult/SearchResult";
 import "./watchlist.scss";
@@ -27,16 +28,19 @@ function WatchlistSearchInput({ queryString, inputHandler, searchInputRef }) {
   );
 }
 
-function WatchlistItems({ watchlistSymbols, deleteItems }) {
+function WatchlistItems({ watchlistSymbols, deleteItems, watchlistData }) {
   const watchlistItems = watchlistSymbols.map((symbol) => {
+    const symbolData = watchlistData[symbol];
     return (
       <li className="watchlist__item symbol " key={symbol}>
         <span className="symbol__name">{symbol}</span>
         <div className="symbol__price">
-          <span className="symbol__price--latest">0.00</span>
+          <span className={`symbol__price--latest ${symbolData?.priceColor}`}>{symbolData?.price || "0.0"}</span>
           <div>
-            <span className="symbol__price--24change">(+0.00%)</span>
-            <i className="symbol__price--direction ri-arrow-up-s-fill" />
+            <span className={`symbol__price--24change ${symbolData?.priceChangeColor}`}>
+              ({symbolData?.priceChange || "0.0"}%)
+            </span>
+            <i className={`symbol__price--direction ${symbolData?.direction} ${symbolData?.priceChangeColor}`} />
           </div>
         </div>
         <div className="symbol__action">
@@ -58,8 +62,41 @@ export default function Watchlist({ createAlert, activeSection, websocketActions
   const [exchangeSymbols, setExchangeSymbols] = useState([]);
   const [watchlistSymbols, setWatchlistSymbols] = useState(getFromLocalStorage("watchlist") || []);
   const [showSearchResults, setShowSearchResults] = useState(false);
+  const [watchlistData, setWatchlistData] = useState({});
   const searchInputRef = useRef(null);
   const searchResultRef = useRef(null);
+
+  const wsData = useContext(WebSocketContext);
+
+  useEffect(() => {
+    const initialData = {};
+    watchlistSymbols.map((symbol) => {
+      initialData[symbol] = {
+        price: 0.0,
+        priceColor: "",
+        priceChange: 0.0,
+        priceChangeColor: "",
+        direction: "ri-arrow-up-s-fill",
+      };
+    });
+    setWatchlistData(initialData);
+  }, []);
+
+  useEffect(() => {
+    if (wsData) {
+      const prevData = watchlistData[wsData.data.s];
+      const currentPrice = Number(wsData.data.c);
+      const currentPiceChange = Number(wsData.data.P);
+      const newSymbolData = {
+        price: currentPrice,
+        priceColor: prevData?.price ? (currentPrice > prevData.price ? "green" : "red") : "",
+        priceChange: currentPiceChange,
+        priceChangeColor: currentPiceChange > 0 ? "green" : "red",
+        direction: currentPiceChange > 0 ? "ri-arrow-up-s-fill" : "ri-arrow-down-s-fill",
+      };
+      setWatchlistData({ ...watchlistData, [wsData.data.s]: newSymbolData });
+    }
+  }, [wsData]);
 
   const searchInputHandler = (event) => {
     setQueryString(event.target.value);
@@ -82,9 +119,12 @@ export default function Watchlist({ createAlert, activeSection, websocketActions
       const filteredSymbols = watchlistSymbols.filter((symbol) => symbol !== selectedSymbol);
 
       websocketActions.wsUnsubscribe(selectedSymbol, "watchlist");
-
       updateLocalStorage("watchlist", filteredSymbols);
       setWatchlistSymbols((prevSymbols) => prevSymbols.filter((symbol) => symbol !== selectedSymbol));
+
+      const updatedData = { ...watchlistData };
+      delete updatedData[selectedSymbol];
+      setWatchlistData(updatedData);
     } else if (event.target.classList.contains("createNewAlert")) {
       const listElement = event.target.closest(".watchlist__item");
       const selectedSymbol = listElement.querySelector(".symbol__name").textContent;
@@ -124,7 +164,11 @@ export default function Watchlist({ createAlert, activeSection, websocketActions
         />
       )}
 
-      <WatchlistItems watchlistSymbols={watchlistSymbols} deleteItems={deleteFromWatchlistHandler} />
+      <WatchlistItems
+        watchlistSymbols={watchlistSymbols}
+        deleteItems={deleteFromWatchlistHandler}
+        watchlistData={watchlistData}
+      />
     </section>
   );
 }

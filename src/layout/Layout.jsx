@@ -10,11 +10,13 @@ import AlertSection from "../components/AlertsSection/AlertSection";
 
 import { getFromLocalStorage } from "../utils/localStorageUtils";
 import { getCurrentTime } from "../utils/currentTimeUtils";
+
+import { WebSocketProvider } from "../context/websocketContext";
 import { PrimaryNotificationsProvider } from "../context/primaryNotificationsContext";
 import { SecondaryNotificationsProvider } from "../context/secondaryNotificationsContext";
 
 import alertsReducer from "../reducers/alertsReducer";
-import React, { useEffect, useReducer, useRef, useState } from "react";
+import React, { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import wsConnect from "../wsconnect";
 
 function getSubscribedSymbols() {
@@ -34,6 +36,7 @@ function getUniqueSymbolsArray(symbolsObject) {
 export default function Layout() {
   const [subscribedSymbols, setSubscribedSymbols] = useState(getSubscribedSymbols());
   const [showNotificationWindow, setShowNotificationWindow] = useState(false);
+  const [webSocketData, setWebSocketData] = useState(null);
   const [primaryNotification, setPrimaryNotification] = useState({});
   const [secondaryNotification, setSecondaryNotification] = useState({});
   const [alertModal, setAlertModal] = useState({});
@@ -46,9 +49,11 @@ export default function Layout() {
 
   const [allAlerts, dispatchAlerts] = useReducer(alertsReducer, initialAlerts);
 
+  const wsContextValue = useMemo(() => webSocketData, [webSocketData]);
+
   const onWsData = (data) => {
     if (data?.stream) {
-      console.log(data.data.s);
+      setWebSocketData(data);
     }
   };
 
@@ -140,35 +145,37 @@ export default function Layout() {
   };
 
   return (
-    <PrimaryNotificationsProvider primaryNotification={primaryNotificationHandler}>
-      <SecondaryNotificationsProvider secondaryNotification={secondaryNotificationHandler}>
-        <Header
-          primaryNotification={primaryNotification}
-          activeSectionHandler={activeSectionHandler}
-          onBellClick={toggleNotificationWindow}
-          showNotificationWindow={showNotificationWindow}
-        />
-        <PrimaryNotification notification={primaryNotification} />
-        <SecondaryNotification message={secondaryNotification.message} icon={secondaryNotification.icon} />
-        <AlertModal modalObject={alertModal} dispatchAlerts={dispatchAlerts} />
-        <main className="main container">
-          <NotificationWindow primaryNotification={primaryNotification} showWindow={showNotificationWindow} />
-          <Watchlist
-            createAlert={createAlertHandler}
-            activeSection={activeSection}
-            websocketActions={websocketActions}
+    <WebSocketProvider wsContextValue={wsContextValue}>
+      <PrimaryNotificationsProvider primaryNotification={primaryNotificationHandler}>
+        <SecondaryNotificationsProvider secondaryNotification={secondaryNotificationHandler}>
+          <Header
+            primaryNotification={primaryNotification}
+            activeSectionHandler={activeSectionHandler}
+            onBellClick={toggleNotificationWindow}
+            showNotificationWindow={showNotificationWindow}
           />
-          <AlertSection
-            createAlert={createAlertHandler}
-            activeSection={activeSection}
-            allAlerts={allAlerts}
-            dispatchAlerts={dispatchAlerts}
-            websocketActions={websocketActions}
-          />
-          {/* <SettingsSection /> */}
-          {/* <AboutSection /> */}
-        </main>
-      </SecondaryNotificationsProvider>
-    </PrimaryNotificationsProvider>
+          <PrimaryNotification notification={primaryNotification} />
+          <SecondaryNotification notification={secondaryNotification} />
+          <AlertModal modalObject={alertModal} dispatchAlerts={dispatchAlerts} />
+          <main className="main container">
+            <NotificationWindow primaryNotification={primaryNotification} showWindow={showNotificationWindow} />
+            <Watchlist
+              createAlert={createAlertHandler}
+              activeSection={activeSection}
+              websocketActions={websocketActions}
+            />
+            <AlertSection
+              createAlert={createAlertHandler}
+              activeSection={activeSection}
+              allAlerts={allAlerts}
+              dispatchAlerts={dispatchAlerts}
+              websocketActions={websocketActions}
+            />
+            {/* <SettingsSection /> */}
+            {/* <AboutSection /> */}
+          </main>
+        </SecondaryNotificationsProvider>
+      </PrimaryNotificationsProvider>
+    </WebSocketProvider>
   );
 }

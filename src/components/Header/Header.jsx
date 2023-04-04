@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { getFromLocalStorage, addToLocalStorage } from "../../utils/localStorageUtils";
 import "./header.scss";
 
@@ -183,7 +183,7 @@ function Notification({ primaryNotification, onBellClick, showNotificationWindow
   );
 }
 
-export default function Header({ primaryNotification, activeSectionHandler, onBellClick, showNotificationWindow }) {
+function Header({ primaryNotification, activeSectionHandler, onBellClick, showNotificationWindow }) {
   return (
     <header className="header" id="header">
       <nav className="nav container">
@@ -203,3 +203,5 @@ export default function Header({ primaryNotification, activeSectionHandler, onBe
     </header>
   );
 }
+
+export default React.memo(Header);

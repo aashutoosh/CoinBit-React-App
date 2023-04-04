@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { PRIMARY_NOTIFICATION_SEC } from "../../config";
 
 import "./primaryNotification.scss";
@@ -36,7 +36,7 @@ function NotificationItem({ title, description, condition, icon, onClose }) {
   );
 }
 
-export default function PrimaryNotification({ notification }) {
+function PrimaryNotification({ notification }) {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
@@ -64,3 +64,5 @@ export default function PrimaryNotification({ notification }) {
     </div>
   );
 }
+
+export default React.memo(PrimaryNotification);
