@@ -1,5 +1,6 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { SecondaryNotificationsContext } from "../../context/secondaryNotificationsContext";
+import { WebSocketContext } from "../../context/websocketContext";
 import "./alertSection.scss";
 
 function Heading({ tabChange, createAlert }) {
@@ -48,7 +49,7 @@ function Heading({ tabChange, createAlert }) {
   );
 }
 
-function AlertRow({ alert, pendingAlertsType, actionHandler }) {
+function AlertRow({ alert, pendingAlertsType, actionHandler, tableData }) {
   return (
     <tr className="row" data-key={alert.createdon}>
       <td>
@@ -67,7 +68,9 @@ function AlertRow({ alert, pendingAlertsType, actionHandler }) {
       </td>
       <td>
         <span className="symbol">{alert.symbol}</span>
-        {pendingAlertsType && <span className="ltp green">0.00</span>}
+        {pendingAlertsType && (
+          <span className={`ltp ${tableData[alert.symbol]?.priceColor}`}>{tableData[alert.symbol]?.price}</span>
+        )}
       </td>
       <td>
         <span>{alert.condition}</span>
@@ -80,6 +83,9 @@ function AlertRow({ alert, pendingAlertsType, actionHandler }) {
 function Table({ alerts, alertsType, dispatchAlerts, createAlert, websocketActions }) {
   const { secondaryNotification } = useContext(SecondaryNotificationsContext);
   const pendingAlertsType = alertsType === "pending";
+  const [tableData, setTableData] = useState({});
+  const wsData = useContext(WebSocketContext);
+  console.log(tableData);
 
   const actionHandler = (type, alert) => {
     if (type === "edit") {
@@ -96,8 +102,37 @@ function Table({ alerts, alertsType, dispatchAlerts, createAlert, websocketActio
       });
 
       websocketActions.wsUnsubscribe(alert.symbol, "pendingAlerts");
+
+      const updatedData = { ...tableData };
+      delete updatedData[alert.symbol];
+      setTableData(updatedData);
     }
   };
+
+  useEffect(() => {
+    if (alertsType === "pending") {
+      const initialData = {};
+      alerts.map((alert) => {
+        initialData[alert.symbol] = {
+          price: 0.0,
+          priceColor: "",
+        };
+      });
+      setTableData(initialData);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (wsData && alertsType === "pending") {
+      const prevData = tableData[wsData.data.s];
+      const currentPrice = Number(wsData.data.c);
+      const newSymbolData = {
+        price: currentPrice,
+        priceColor: prevData?.price ? (currentPrice > prevData.price ? "green" : "red") : "",
+      };
+      setTableData({ ...tableData, [wsData.data.s]: newSymbolData });
+    }
+  }, [wsData]);
 
   return (
     <div className="table__container">
@@ -118,6 +153,7 @@ function Table({ alerts, alertsType, dispatchAlerts, createAlert, websocketActio
               alert={alert}
               pendingAlertsType={pendingAlertsType}
               actionHandler={actionHandler}
+              tableData={tableData}
             />
           ))}
         </tbody>
