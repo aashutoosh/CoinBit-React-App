@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { SecondaryNotificationsContext } from "../../context/secondaryNotificationsContext";
+import { WebSocketContext } from "../../context/websocketContext";
 import { getUniqueSymbols } from "../../utils/helper";
 import "./alertModal.scss";
 
@@ -14,8 +15,9 @@ function AllSymbolsOptions() {
   return symbolsOption;
 }
 
-export default function AlertModal({ modalObject, dispatchAlerts }) {
+function AlertModal({ modalObject, dispatchAlerts }) {
   const { secondaryNotification } = useContext(SecondaryNotificationsContext);
+  const wsData = useContext(WebSocketContext);
   const updateAlert = modalObject.type === "update";
   const initialFormData = {
     title: updateAlert ? modalObject.payload.title : "",
@@ -27,7 +29,23 @@ export default function AlertModal({ modalObject, dispatchAlerts }) {
 
   const [isVisible, setIsVisible] = useState(false);
   const [formData, setFormData] = useState(initialFormData);
+  const [priceData, setPriceData] = useState({});
   const modalRef = useRef(null);
+
+  useEffect(() => {
+    if (wsData) {
+      const formSymbol = formData.symbol || getUniqueSymbols()?.[0];
+      if (wsData.data.s === formSymbol) {
+        const currentPrice = Number(wsData.data.c);
+        const symbolData = {
+          price: currentPrice,
+          priceColor: priceData?.price ? (currentPrice > priceData.price ? "green" : "red") : "",
+        };
+
+        setPriceData(symbolData);
+      }
+    }
+  }, [wsData]);
 
   const showModal = () => {
     setIsVisible(true);
@@ -137,8 +155,8 @@ export default function AlertModal({ modalObject, dispatchAlerts }) {
               <label htmlFor="modalSymbolSelect" className="label alertmodal__form--symbol">
                 Symbol
               </label>
-              <span id="modalSymbolPrice" className="green alertmodal__form--price">
-                0.00
+              <span id="modalSymbolPrice" className={`alertmodal__form--price ${priceData.priceColor}`}>
+                {priceData.price}
               </span>
             </div>
             <div className="alertmodal__form--fields">
@@ -184,3 +202,5 @@ export default function AlertModal({ modalObject, dispatchAlerts }) {
     )
   );
 }
+
+export default React.memo(AlertModal);
