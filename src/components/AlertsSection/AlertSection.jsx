@@ -85,7 +85,6 @@ function Table({ alerts, alertsType, dispatchAlerts, createAlert, websocketActio
   const pendingAlertsType = alertsType === "pending";
   const [tableData, setTableData] = useState({});
   const wsData = useContext(WebSocketContext);
-  console.log(tableData);
 
   const actionHandler = (type, alert) => {
     if (type === "edit") {
@@ -101,11 +100,16 @@ function Table({ alerts, alertsType, dispatchAlerts, createAlert, websocketActio
         secondaryNotification,
       });
 
-      websocketActions.wsUnsubscribe(alert.symbol, "pendingAlerts");
+      // If pending type then only can unsubscribe after alert deleted
+      if (pendingAlertsType) {
+        websocketActions.wsUnsubscribe(alert.symbol, "pendingAlerts");
 
-      const updatedData = { ...tableData };
-      delete updatedData[alert.symbol];
-      setTableData(updatedData);
+        if (alerts.filter((a) => a.symbol === alert.symbol).length === 1) {
+          const updatedData = { ...tableData };
+          delete updatedData[alert.symbol];
+          setTableData(updatedData);
+        }
+      }
     }
   };
 

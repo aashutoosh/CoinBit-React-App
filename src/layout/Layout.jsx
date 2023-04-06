@@ -1,3 +1,11 @@
+import React, { useEffect, useMemo, useReducer, useRef, useState } from "react";
+
+import { getAllAlerts, getSubscribedSymbols, getUniqueSymbolsArray } from "../utils/helper";
+import { SecondaryNotificationsProvider } from "../context/secondaryNotificationsContext";
+import { PrimaryNotificationsProvider } from "../context/primaryNotificationsContext";
+import { WebSocketProvider } from "../context/websocketContext";
+import { getCurrentTime } from "../utils/currentTimeUtils";
+
 import Header from "../components/Header/Header";
 import AlertModal from "../components/AlertModal/AlertModal";
 import PrimaryNotification from "../components/Notification/PrimaryNotification";
@@ -7,31 +15,8 @@ import Watchlist from "../components/Watchlist/Watchlist";
 import AlertSection from "../components/AlertsSection/AlertSection";
 // import SettingsSection from "../components/SettingsSection/SettingsSection";
 // import AboutSection from "../components/AboutSection/AboutSection";
-
-import { getFromLocalStorage } from "../utils/localStorageUtils";
-import { getCurrentTime } from "../utils/currentTimeUtils";
-
-import { WebSocketProvider } from "../context/websocketContext";
-import { PrimaryNotificationsProvider } from "../context/primaryNotificationsContext";
-import { SecondaryNotificationsProvider } from "../context/secondaryNotificationsContext";
-
 import alertsReducer from "../reducers/alertsReducer";
-import React, { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import wsConnect from "../wsconnect";
-
-function getSubscribedSymbols() {
-  const watchlistSymbols = getFromLocalStorage("watchlist") || [];
-  const pendingAlertsSymbols = getFromLocalStorage("pendingAlerts")?.map(({ symbol }) => symbol) || [];
-
-  return { watchlist: watchlistSymbols, pendingAlerts: pendingAlertsSymbols };
-}
-
-function getUniqueSymbolsArray(symbolsObject) {
-  const allSymbols = [...symbolsObject.watchlist, ...symbolsObject.pendingAlerts];
-  const allUniqueSymbols = [...new Set(allSymbols)];
-
-  return allUniqueSymbols;
-}
 
 export default function Layout() {
   const [subscribedSymbols, setSubscribedSymbols] = useState(getSubscribedSymbols());
@@ -41,10 +26,7 @@ export default function Layout() {
   const [secondaryNotification, setSecondaryNotification] = useState({});
   const [alertModal, setAlertModal] = useState({});
   const [activeSection, setActiveSection] = useState("alerts");
-  const initialAlerts = {
-    pendingAlerts: getFromLocalStorage("pendingAlerts") || [],
-    triggeredAlerts: getFromLocalStorage("triggeredAlerts") || [],
-  };
+  const initialAlerts = getAllAlerts();
   const ws = useRef(null);
 
   const [allAlerts, dispatchAlerts] = useReducer(alertsReducer, initialAlerts);
@@ -60,7 +42,6 @@ export default function Layout() {
   const onWsNotification = (message, icon) => secondaryNotificationHandler(message, icon);
 
   // Initialize the WebSocket connection
-
   const initializeWebsocket = (symbolsArray) => {
     const uniqueSymbols = symbolsArray ? symbolsArray : getUniqueSymbolsArray(subscribedSymbols);
     ws.current = new wsConnect();
@@ -96,19 +77,19 @@ export default function Layout() {
           ...subscribedSymbols,
           watchlist: subscribedSymbols.watchlist.filter((s) => s !== symbol),
         });
-
         if (!subscribedSymbols.pendingAlerts.includes(symbol)) {
           // Unsubscribe if symbol is not present in pending alerts
           ws.current.unsubscribeSymbol(symbol);
         }
       } else if (origin === "pendingAlerts") {
-        setSubscribedSymbols({
-          ...subscribedSymbols,
-          pendingAlerts: subscribedSymbols.pendingAlerts.filter((s) => s !== symbol),
-        });
+        const symbolAlertCount = allAlerts.pendingAlerts.filter((alert) => alert.symbol === symbol).length;
 
-        if (!subscribedSymbols.watchlist.includes(symbol)) {
-          // Unsubscribe if symbol is not present in watchlist
+        // Unsubscribe if symbol is not present in watchlist
+        if (!subscribedSymbols.watchlist.includes(symbol) && symbolAlertCount === 1) {
+          setSubscribedSymbols({
+            ...subscribedSymbols,
+            pendingAlerts: subscribedSymbols.pendingAlerts.filter((s) => s !== symbol),
+          });
           ws.current.unsubscribeSymbol(symbol);
         }
       }
@@ -122,10 +103,12 @@ export default function Layout() {
 
   const createAlertHandler = (alertObject) => {
     setAlertModal(alertObject);
-    setSubscribedSymbols({
-      ...subscribedSymbols,
-      pendingAlerts: [...subscribedSymbols.pendingAlerts, alertObject.symbol],
-    });
+    if (!subscribedSymbols.pendingAlerts.includes(alertObject.symbol)) {
+      setSubscribedSymbols({
+        ...subscribedSymbols,
+        pendingAlerts: [...subscribedSymbols.pendingAlerts, alertObject.symbol],
+      });
+    }
   };
 
   const activeSectionHandler = (section) => {
@@ -137,7 +120,7 @@ export default function Layout() {
   };
 
   const secondaryNotificationHandler = (message, icon) => {
-    setSecondaryNotification({ message, icon });
+    setSecondaryNotification({ id: Date.now(), message, icon });
   };
 
   const toggleNotificationWindow = () => {

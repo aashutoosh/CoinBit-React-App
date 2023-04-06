@@ -23,7 +23,9 @@ function SecondaryNotification({ notification }) {
       }, SECONDARY_NOTIFICATION_SEC);
     }
 
-    return () => clearTimeout(timeoutId);
+    if (timeoutId) {
+      return () => clearTimeout(timeoutId);
+    }
   }, [isVisible, message]);
 
   useEffect(() => {
@@ -34,7 +36,7 @@ function SecondaryNotification({ notification }) {
     return () => {
       setIsVisible(false);
     };
-  }, [message]);
+  }, [notification]);
 
   return (
     <>
