@@ -175,10 +175,16 @@ function EmptyText() {
   );
 }
 
-export default function AlertSection({ createAlert, activeSection, allAlerts, dispatchAlerts, websocketActions }) {
+export default function AlertSection({
+  subscribedSymbols,
+  createAlert,
+  activeSection,
+  allAlerts,
+  dispatchAlerts,
+  websocketActions,
+}) {
   const [alertsType, setAlertsType] = useState("pending");
   const alerts = alertsType === "pending" ? allAlerts.pendingAlerts : allAlerts.triggeredAlerts;
-
   return (
     <section className={`alerts rightside ${activeSection === "alerts" ? "showsection" : ""}`} id="alerts">
       <Heading tabChange={(tabType) => setAlertsType(tabType)} createAlert={createAlert} />
@@ -191,7 +197,9 @@ export default function AlertSection({ createAlert, activeSection, allAlerts, di
           websocketActions={websocketActions}
         />
       )}
-      {alerts.length === 0 && alertsType === "pending" && <EmptyText />}
+      {subscribedSymbols.watchlist.length === 0 &&
+        subscribedSymbols.pendingAlerts.length === 0 &&
+        alertsType === "pending" && <EmptyText />}
     </section>
   );
 }

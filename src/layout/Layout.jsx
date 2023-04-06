@@ -148,6 +148,7 @@ export default function Layout() {
               websocketActions={websocketActions}
             />
             <AlertSection
+              subscribedSymbols={subscribedSymbols}
               createAlert={createAlertHandler}
               activeSection={activeSection}
               allAlerts={allAlerts}
