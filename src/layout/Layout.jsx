@@ -14,7 +14,7 @@ import NotificationWindow from "../components/Notification/NotificationWindow";
 import Watchlist from "../components/Watchlist/Watchlist";
 import AlertSection from "../components/AlertsSection/AlertSection";
 import SettingsSection from "../components/SettingsSection/SettingsSection";
-// import AboutSection from "../components/AboutSection/AboutSection";
+import AboutSection from "../components/AboutSection/AboutSection";
 import alertsReducer from "../reducers/alertsReducer";
 import wsConnect from "../wsconnect";
 
@@ -158,7 +158,7 @@ export default function Layout() {
               websocketActions={websocketActions}
             />
             <SettingsSection activeSection={activeSection} />
-            {/* <AboutSection /> */}
+            <AboutSection activeSection={activeSection} />
           </main>
         </SecondaryNotificationsProvider>
       </PrimaryNotificationsProvider>

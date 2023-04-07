@@ -1,0 +1,49 @@
+.about {
+    display: none;
+    overflow-y: auto;
+
+    a {
+        color: var(--primary-100);
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+.intro,
+.disclaimer,
+.features,
+.technology,
+.github {
+    font-weight: 400;
+    margin-bottom: 1.5rem;
+    color: var(--textLight-300);
+    padding: 0 1rem;
+
+    p {
+        line-height: 1.5;
+    }
+
+    &__heading,
+    h3 {
+        font-weight: 500;
+        margin-bottom: 0.75rem;
+        color: var(--textLight-100);
+    }
+
+    ul li {
+        margin-left: 1.5rem;
+        line-height: 1.5;
+    }
+}
+
+.github {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+
+    &__icon {
+        font-size: 1.5rem;
+    }
+}
