@@ -13,7 +13,7 @@ import SecondaryNotification from "../components/Notification/SecondaryNotificat
 import NotificationWindow from "../components/Notification/NotificationWindow";
 import Watchlist from "../components/Watchlist/Watchlist";
 import AlertSection from "../components/AlertsSection/AlertSection";
-// import SettingsSection from "../components/SettingsSection/SettingsSection";
+import SettingsSection from "../components/SettingsSection/SettingsSection";
 // import AboutSection from "../components/AboutSection/AboutSection";
 import alertsReducer from "../reducers/alertsReducer";
 import wsConnect from "../wsconnect";
@@ -42,18 +42,10 @@ export default function Layout() {
   const onWsNotification = (message, icon) => secondaryNotificationHandler(message, icon);
 
   // Initialize the WebSocket connection
-  const initializeWebsocket = (symbolsArray) => {
-    const uniqueSymbols = symbolsArray ? symbolsArray : getUniqueSymbolsArray(subscribedSymbols);
+  const initializeWebsocket = (symbolsArray = getUniqueSymbolsArray(subscribedSymbols)) => {
     ws.current = new wsConnect();
-    ws.current.init(uniqueSymbols, onWsData, onWsNotification);
+    ws.current.init(symbolsArray, onWsData, onWsNotification);
   };
-
-  useEffect(() => {
-    const uniqueSymbols = getUniqueSymbolsArray(subscribedSymbols);
-    if (!ws.current && uniqueSymbols.length > 0) {
-      initializeWebsocket();
-    }
-  }, []);
 
   const wsSubscribe = (symbol) => {
     // If websocket exist then subscribe to that symbol otherwise initialize websocket
@@ -90,6 +82,7 @@ export default function Layout() {
             ...subscribedSymbols,
             pendingAlerts: subscribedSymbols.pendingAlerts.filter((s) => s !== symbol),
           });
+
           ws.current.unsubscribeSymbol(symbol);
         }
       }
@@ -101,8 +94,17 @@ export default function Layout() {
     wsUnsubscribe,
   };
 
+  // Initialize websocket connection after first page load
+  useEffect(() => {
+    const uniqueSymbols = getUniqueSymbolsArray(subscribedSymbols);
+    if (!ws.current && uniqueSymbols.length > 0) {
+      initializeWebsocket();
+    }
+  }, []);
+
   const createAlertHandler = (alertObject) => {
     setAlertModal(alertObject);
+
     if (!subscribedSymbols.pendingAlerts.includes(alertObject.symbol)) {
       setSubscribedSymbols({
         ...subscribedSymbols,
@@ -155,7 +157,7 @@ export default function Layout() {
               dispatchAlerts={dispatchAlerts}
               websocketActions={websocketActions}
             />
-            {/* <SettingsSection /> */}
+            <SettingsSection activeSection={activeSection} />
             {/* <AboutSection /> */}
           </main>
         </SecondaryNotificationsProvider>
