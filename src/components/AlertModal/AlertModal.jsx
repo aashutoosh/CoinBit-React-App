@@ -34,7 +34,7 @@ function CloseButton({ closeHandler }) {
 }
 
 function AlertModal({ modalObject, dispatchAlerts }) {
-  const { secondaryNotification } = useContext(SecondaryNotificationsContext);
+  const secondaryNotification = useContext(SecondaryNotificationsContext);
   const wsData = useContext(WebSocketContext);
   const updateAlert = modalObject.type === 'update';
   const initialFormData = {

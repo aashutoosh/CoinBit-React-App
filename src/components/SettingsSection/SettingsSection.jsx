@@ -41,7 +41,7 @@ function DiscordToggle({ discordChecked, onToggle }) {
 }
 
 function WebhookInput({ discordChecked }) {
-  const { secondaryNotification } = useContext(SecondaryNotificationsContext);
+  const secondaryNotification = useContext(SecondaryNotificationsContext);
   const [webhookUrl, setWebhookUrl] = useState(getFromLocalStorage('discordWebhookUrl') || '');
 
   const updateWebhookUrl = () => {

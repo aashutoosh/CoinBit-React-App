@@ -147,7 +147,7 @@ function AlertRow({ alert, pendingAlertsType, actionHandler, tableData }) {
 }
 
 function Table({ alerts, alertsType, dispatchAlerts, createAlert, websocketActions }) {
-  const { secondaryNotification } = useContext(SecondaryNotificationsContext);
+  const secondaryNotification = useContext(SecondaryNotificationsContext);
   const pendingAlertsType = alertsType === 'pending';
   const [tableData, setTableData] = useState({});
   const wsData = useContext(WebSocketContext);
