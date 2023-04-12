@@ -1,48 +1,78 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { SecondaryNotificationsContext } from "../../context/secondaryNotificationsContext";
-import { WebSocketContext } from "../../context/websocketContext";
-import "./alertSection.scss";
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { SecondaryNotificationsContext } from '../../context/secondaryNotificationsContext';
+import { WebSocketContext } from '../../context/websocketContext';
+import './alertSection.scss';
 
 function Heading({ tabChange, createAlert }) {
   const pendingTab = useRef(null);
   const triggeredTab = useRef(null);
 
   const tabChangeHandler = (event) => {
-    const isPendingType = event.target.classList.contains("alerts__title--pending");
+    const isPendingType = event.target.classList.contains('alerts__title--pending');
     if (isPendingType) {
-      triggeredTab.current.classList.remove("active");
-      pendingTab.current.classList.add("active");
-      tabChange("pending");
+      triggeredTab.current.classList.remove('active');
+      pendingTab.current.classList.add('active');
+      tabChange('pending');
     } else {
-      pendingTab.current.classList.remove("active");
-      triggeredTab.current.classList.add("active");
-      tabChange("triggered");
+      pendingTab.current.classList.remove('active');
+      triggeredTab.current.classList.add('active');
+      tabChange('triggered');
+    }
+  };
+
+  const keyTabChangeHandler = (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      tabChangeHandler(event);
     }
   };
 
   const createNewAlert = () => {
     createAlert({
-      type: "create",
-      symbol: "",
+      type: 'create',
+      symbol: '',
     });
   };
 
   return (
     <div className="heading">
       <div className="heading__window">
-        <h2 className="alerts__title alerts__title--pending active" onClick={tabChangeHandler} ref={pendingTab}>
+        <button
+          className="alerts__title alerts__title--pending active"
+          onClick={tabChangeHandler}
+          ref={pendingTab}
+          onKeyDown={keyTabChangeHandler}
+          aria-label="Pending alerts tab"
+          type="button"
+        >
           <i className="ri-eye-line" />
           Pending
-        </h2>
-        <h2 className="alerts__title alerts__title--triggered" onClick={tabChangeHandler} ref={triggeredTab}>
+        </button>
+        <button
+          className="alerts__title alerts__title--triggered"
+          onClick={tabChangeHandler}
+          ref={triggeredTab}
+          onKeyDown={keyTabChangeHandler}
+          aria-label="Triggered alerts tab"
+          type="button"
+        >
           <i className="ri-eye-close-line" />
           Triggered
-        </h2>
+        </button>
       </div>
-      <button className="alerts__create--button text" onClick={createNewAlert}>
+      <button
+        className="alerts__create--button text"
+        onClick={createNewAlert}
+        type="button"
+        aria-label="Create Alert"
+      >
         Create Alert
       </button>
-      <button className="alerts__create--button icon" onClick={createNewAlert}>
+      <button
+        className="alerts__create--button icon"
+        onClick={createNewAlert}
+        type="button"
+        aria-label="Create Alert"
+      >
         <i className="ri-add-line" />
       </button>
     </div>
@@ -50,8 +80,26 @@ function Heading({ tabChange, createAlert }) {
 }
 
 function AlertRow({ alert, pendingAlertsType, actionHandler, tableData }) {
+  const rowRef = useRef(null);
+  const editButtonRef = useRef(null);
+  const deleteButtonRef = useRef(null);
+
+  const editButtonHandler = () => actionHandler('edit', alert);
+  const deleteButtonHandler = () => actionHandler('delete', alert);
+
+  const editKeyDown = (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      editButtonHandler();
+    }
+  };
+  const deleteKeyDown = (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      deleteButtonHandler();
+    }
+  };
+
   return (
-    <tr className="row" data-key={alert.createdon}>
+    <tr className="row" data-key={alert.createdon} tabIndex={0} ref={rowRef}>
       <td>
         <div className="textContent">
           <span className="title">{alert.title}</span>
@@ -61,15 +109,33 @@ function AlertRow({ alert, pendingAlertsType, actionHandler, tableData }) {
       <td>
         <div className="control__buttons">
           {pendingAlertsType && (
-            <i className="control__buttons--edit ri-pencil-line" onClick={() => actionHandler("edit", alert)}></i>
+            <i
+              ref={editButtonRef}
+              tabIndex={0}
+              role="button"
+              className="control__buttons--edit ri-pencil-line"
+              onClick={editButtonHandler}
+              onKeyDown={editKeyDown}
+              aria-label="Edit"
+            />
           )}
-          <i className="control__buttons--delete ri-close-line" onClick={() => actionHandler("delete", alert)}></i>
+          <i
+            ref={deleteButtonRef}
+            tabIndex={0}
+            role="button"
+            className="control__buttons--delete ri-close-line"
+            onClick={deleteButtonHandler}
+            onKeyDown={deleteKeyDown}
+            aria-label="Delete"
+          />
         </div>
       </td>
       <td>
         <span className="symbol">{alert.symbol}</span>
         {pendingAlertsType && (
-          <span className={`ltp ${tableData[alert.symbol]?.priceColor}`}>{tableData[alert.symbol]?.price}</span>
+          <span className={`ltp ${tableData[alert.symbol]?.priceColor}`}>
+            {tableData[alert.symbol]?.price}
+          </span>
         )}
       </td>
       <td>
@@ -82,19 +148,19 @@ function AlertRow({ alert, pendingAlertsType, actionHandler, tableData }) {
 
 function Table({ alerts, alertsType, dispatchAlerts, createAlert, websocketActions }) {
   const { secondaryNotification } = useContext(SecondaryNotificationsContext);
-  const pendingAlertsType = alertsType === "pending";
+  const pendingAlertsType = alertsType === 'pending';
   const [tableData, setTableData] = useState({});
   const wsData = useContext(WebSocketContext);
 
   const actionHandler = (type, alert) => {
-    if (type === "edit") {
+    if (type === 'edit') {
       createAlert({
-        type: "update",
+        type: 'update',
         payload: alert,
       });
-    } else if (type === "delete") {
+    } else if (type === 'delete') {
       dispatchAlerts({
-        type: "DELETE_ALERT",
+        type: 'DELETE_ALERT',
         isPending: pendingAlertsType,
         payload: alert,
         secondaryNotification,
@@ -102,7 +168,7 @@ function Table({ alerts, alertsType, dispatchAlerts, createAlert, websocketActio
 
       // If pending type then only can unsubscribe after alert deleted
       if (pendingAlertsType) {
-        websocketActions.wsUnsubscribe(alert.symbol, "pendingAlerts");
+        websocketActions.wsUnsubscribe(alert.symbol, 'pendingAlerts');
 
         if (alerts.filter((a) => a.symbol === alert.symbol).length === 1) {
           const updatedData = { ...tableData };
@@ -114,12 +180,12 @@ function Table({ alerts, alertsType, dispatchAlerts, createAlert, websocketActio
   };
 
   useEffect(() => {
-    if (alertsType === "pending") {
+    if (alertsType === 'pending') {
       const initialData = {};
-      alerts.map((alert) => {
+      alerts.forEach((alert) => {
         initialData[alert.symbol] = {
           price: 0.0,
-          priceColor: "",
+          priceColor: '',
         };
       });
       setTableData(initialData);
@@ -127,14 +193,20 @@ function Table({ alerts, alertsType, dispatchAlerts, createAlert, websocketActio
   }, []);
 
   useEffect(() => {
-    if (wsData && alertsType === "pending") {
-      const prevData = tableData[wsData.data.s];
-      const currentPrice = Number(wsData.data.c);
+    if (wsData && alertsType === 'pending') {
+      const {
+        data: { s: symbol, c: currentPrice },
+      } = wsData;
+      const prevData = tableData[symbol];
+      let priceColor = '';
+      if (prevData && prevData.price) {
+        priceColor = currentPrice > prevData.price ? 'green' : 'red';
+      }
       const newSymbolData = {
-        price: currentPrice,
-        priceColor: prevData?.price ? (currentPrice > prevData.price ? "green" : "red") : "",
+        price: Number(currentPrice),
+        priceColor,
       };
-      setTableData({ ...tableData, [wsData.data.s]: newSymbolData });
+      setTableData((prevTableData) => ({ ...prevTableData, [symbol]: newSymbolData }));
     }
   }, [wsData]);
 
@@ -183,10 +255,13 @@ export default function AlertSection({
   dispatchAlerts,
   websocketActions,
 }) {
-  const [alertsType, setAlertsType] = useState("pending");
-  const alerts = alertsType === "pending" ? allAlerts.pendingAlerts : allAlerts.triggeredAlerts;
+  const [alertsType, setAlertsType] = useState('pending');
+  const alerts = alertsType === 'pending' ? allAlerts.pendingAlerts : allAlerts.triggeredAlerts;
   return (
-    <section className={`alerts rightside ${activeSection === "alerts" ? "showsection" : ""}`} id="alerts">
+    <section
+      className={`alerts rightside ${activeSection === 'alerts' ? 'showsection' : ''}`}
+      id="alerts"
+    >
       <Heading tabChange={(tabType) => setAlertsType(tabType)} createAlert={createAlert} />
       {alerts.length > 0 && (
         <Table
@@ -199,7 +274,7 @@ export default function AlertSection({
       )}
       {subscribedSymbols.watchlist.length === 0 &&
         subscribedSymbols.pendingAlerts.length === 0 &&
-        alertsType === "pending" && <EmptyText />}
+        alertsType === 'pending' && <EmptyText />}
     </section>
   );
 }

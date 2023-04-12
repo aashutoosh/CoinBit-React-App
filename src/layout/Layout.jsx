@@ -1,22 +1,22 @@
-import React, { useEffect, useMemo, useReducer, useRef, useState } from "react";
+import React, { useEffect, useMemo, useReducer, useRef, useState } from 'react';
 
-import { getAllAlerts, getSubscribedSymbols, getUniqueSymbolsArray } from "../utils/helper";
-import { SecondaryNotificationsProvider } from "../context/secondaryNotificationsContext";
-import { PrimaryNotificationsProvider } from "../context/primaryNotificationsContext";
-import { WebSocketProvider } from "../context/websocketContext";
-import { getCurrentTime } from "../utils/currentTimeUtils";
+import { getAllAlerts, getSubscribedSymbols, getUniqueSymbolsArray } from '../utils/helper';
+import { SecondaryNotificationsProvider } from '../context/secondaryNotificationsContext';
+import { PrimaryNotificationsProvider } from '../context/primaryNotificationsContext';
+import { WebSocketProvider } from '../context/websocketContext';
+import { getCurrentTime } from '../utils/currentTimeUtils';
 
-import Header from "../components/Header/Header";
-import AlertModal from "../components/AlertModal/AlertModal";
-import PrimaryNotification from "../components/Notification/PrimaryNotification";
-import SecondaryNotification from "../components/Notification/SecondaryNotification";
-import NotificationWindow from "../components/Notification/NotificationWindow";
-import Watchlist from "../components/Watchlist/Watchlist";
-import AlertSection from "../components/AlertsSection/AlertSection";
-import SettingsSection from "../components/SettingsSection/SettingsSection";
-import AboutSection from "../components/AboutSection/AboutSection";
-import alertsReducer from "../reducers/alertsReducer";
-import wsConnect from "../wsconnect";
+import Header from '../components/Header/Header';
+import AlertModal from '../components/AlertModal/AlertModal';
+import PrimaryNotification from '../components/Notification/PrimaryNotification';
+import SecondaryNotification from '../components/Notification/SecondaryNotification';
+import NotificationWindow from '../components/Notification/NotificationWindow';
+import Watchlist from '../components/Watchlist/Watchlist';
+import AlertSection from '../components/AlertsSection/AlertSection';
+import SettingsSection from '../components/SettingsSection/SettingsSection';
+import AboutSection from '../components/AboutSection/AboutSection';
+import alertsReducer from '../reducers/alertsReducer';
+import WsConnect from '../wsconnect';
 
 export default function Layout() {
   const [subscribedSymbols, setSubscribedSymbols] = useState(getSubscribedSymbols());
@@ -25,11 +25,23 @@ export default function Layout() {
   const [primaryNotification, setPrimaryNotification] = useState({});
   const [secondaryNotification, setSecondaryNotification] = useState({});
   const [alertModal, setAlertModal] = useState({});
-  const [activeSection, setActiveSection] = useState("alerts");
+  const [activeSection, setActiveSection] = useState('alerts');
   const initialAlerts = getAllAlerts();
   const ws = useRef(null);
 
   const [allAlerts, dispatchAlerts] = useReducer(alertsReducer, initialAlerts);
+
+  const primaryNotificationHandler = (notificationObject) => {
+    setPrimaryNotification({
+      key: Date.now(),
+      time: getCurrentTime(),
+      ...notificationObject,
+    });
+  };
+
+  const secondaryNotificationHandler = (message, icon) => {
+    setSecondaryNotification({ id: Date.now(), message, icon });
+  };
 
   const wsContextValue = useMemo(() => webSocketData, [webSocketData]);
 
@@ -43,7 +55,7 @@ export default function Layout() {
 
   // Initialize the WebSocket connection
   const initializeWebsocket = (symbolsArray = getUniqueSymbolsArray(subscribedSymbols)) => {
-    ws.current = new wsConnect();
+    ws.current = new WsConnect();
     ws.current.init(symbolsArray, onWsData, onWsNotification);
   };
 
@@ -53,18 +65,24 @@ export default function Layout() {
       const uniqueSymbols = getUniqueSymbolsArray(subscribedSymbols);
       if (!uniqueSymbols.includes(symbol)) {
         ws.current.subscribeSymbol(symbol);
-        setSubscribedSymbols({ ...subscribedSymbols, watchlist: [...subscribedSymbols.watchlist, symbol] });
+        setSubscribedSymbols({
+          ...subscribedSymbols,
+          watchlist: [...subscribedSymbols.watchlist, symbol],
+        });
       }
     } else {
       initializeWebsocket([symbol]);
-      setSubscribedSymbols({ ...subscribedSymbols, watchlist: [...subscribedSymbols.watchlist, symbol] });
-      secondaryNotificationHandler(`Subscribed: ${symbol}`, "ri-checkbox-circle-line");
+      setSubscribedSymbols({
+        ...subscribedSymbols,
+        watchlist: [...subscribedSymbols.watchlist, symbol],
+      });
+      secondaryNotificationHandler(`Subscribed: ${symbol}`, 'ri-checkbox-circle-line');
     }
   };
 
   const wsUnsubscribe = (symbol, origin) => {
     if (ws.current) {
-      if (origin === "watchlist") {
+      if (origin === 'watchlist') {
         setSubscribedSymbols({
           ...subscribedSymbols,
           watchlist: subscribedSymbols.watchlist.filter((s) => s !== symbol),
@@ -73,8 +91,10 @@ export default function Layout() {
           // Unsubscribe if symbol is not present in pending alerts
           ws.current.unsubscribeSymbol(symbol);
         }
-      } else if (origin === "pendingAlerts") {
-        const symbolAlertCount = allAlerts.pendingAlerts.filter((alert) => alert.symbol === symbol).length;
+      } else if (origin === 'pendingAlerts') {
+        const symbolAlertCount = allAlerts.pendingAlerts.filter(
+          (alert) => alert.symbol === symbol,
+        ).length;
 
         // Unsubscribe if symbol is not present in watchlist
         if (!subscribedSymbols.watchlist.includes(symbol) && symbolAlertCount === 1) {
@@ -117,17 +137,23 @@ export default function Layout() {
     setActiveSection(section);
   };
 
-  const primaryNotificationHandler = (notificationObject) => {
-    setPrimaryNotification({ key: Date.now(), time: getCurrentTime(), ...notificationObject });
-  };
-
-  const secondaryNotificationHandler = (message, icon) => {
-    setSecondaryNotification({ id: Date.now(), message, icon });
-  };
-
   const toggleNotificationWindow = () => {
-    setShowNotificationWindow(!showNotificationWindow);
+    setShowNotificationWindow((prev) => !prev);
   };
+
+  useEffect(() => {
+    const closeNotificationWindow = (event) => {
+      if (event.key === 'Escape' && showNotificationWindow) {
+        toggleNotificationWindow();
+      }
+    };
+
+    if (showNotificationWindow) {
+      document.addEventListener('keydown', closeNotificationWindow);
+    } else {
+      document.removeEventListener('keydown', closeNotificationWindow);
+    }
+  }, []);
 
   return (
     <WebSocketProvider wsContextValue={wsContextValue}>
@@ -143,7 +169,10 @@ export default function Layout() {
           <SecondaryNotification notification={secondaryNotification} />
           <AlertModal modalObject={alertModal} dispatchAlerts={dispatchAlerts} />
           <main className="main container">
-            <NotificationWindow primaryNotification={primaryNotification} showWindow={showNotificationWindow} />
+            <NotificationWindow
+              primaryNotification={primaryNotification}
+              showWindow={showNotificationWindow}
+            />
             <Watchlist
               createAlert={createAlertHandler}
               activeSection={activeSection}

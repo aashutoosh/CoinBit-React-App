@@ -1,12 +1,18 @@
-import React, { useEffect, useRef, useState } from "react";
-import { getFromLocalStorage, addToLocalStorage } from "../../utils/localStorageUtils";
-import "./header.scss";
+import React, { useEffect, useRef, useState } from 'react';
+import { getFromLocalStorage, addToLocalStorage } from '../../utils/localStorageUtils';
+import './header.scss';
 
 function NavLogo() {
   return (
     <div className="nav__left">
       <a className="nav__logo" href="/">
-        <svg className="nav__logo--icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={36} height={36}>
+        <svg
+          className="nav__logo--icon"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          width={36}
+          height={36}
+        >
           <path fill="none" d="M0 0h24v24H0z" />
           <path
             d="M23 12v2c0 3.314-4.925 6-11 6-5.967 0-10.824-2.591-10.995-5.823L1 14v-2c0 3.314 4.925 6 11 6s11-2.686 11-6zM12 4c6.075 0 11 2.686 11 6s-4.925 6-11 6-11-2.686-11-6 4.925-6 11-6z"
@@ -19,92 +25,126 @@ function NavLogo() {
   );
 }
 
-function NavLinks(props) {
+function NavLinks({ children }) {
   return (
     <div className="nav__links" id="nav__links">
-      {props.children}
+      {children}
     </div>
+  );
+}
+
+function NavLink({ name, icon, activeLink, handleClick, handleKeyDown }) {
+  return (
+    <a
+      href={`#${name}`}
+      className={`nav__link nav__link--${name} ${activeLink === name ? 'active' : ''}`}
+      onClick={handleClick}
+      onKeyDown={handleKeyDown}
+    >
+      <div>
+        <span>{name}</span>
+        <i className={icon} />
+      </div>
+    </a>
   );
 }
 
 function Links({ activeSection }) {
-  const [activeLink, setActiveLink] = useState("alerts");
+  const [activeLink, setActiveLink] = useState('alerts');
 
   const handleClick = (event) => {
-    const clickedLinkText = event.currentTarget.querySelector("span").textContent.toLowerCase();
+    const clickedLinkText = event.currentTarget.querySelector('span').textContent.toLowerCase();
     setActiveLink(clickedLinkText);
     activeSection(clickedLinkText);
   };
 
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleClick(event);
+    }
+  };
+
   return (
     <div className="links__container">
-      <div
-        className={`nav__link nav__link--watchlist ${activeLink === "watchlist" ? "active" : ""}`}
-        onClick={handleClick}
-      >
-        <a href="#watchlist">
-          <span>Watchlist</span>
-          <i className="ri-apps-2-line" />
-        </a>
-      </div>
-      <div className={`nav__link nav__link--alerts ${activeLink === "alerts" ? "active" : ""}`} onClick={handleClick}>
-        <a href="#">
-          <span>Alerts</span>
-          <i className="ri-alarm-line" />
-        </a>
-      </div>
-      <div
-        className={`nav__link nav__link--settings ${activeLink === "settings" ? "active" : ""}`}
-        onClick={handleClick}
-      >
-        <a href="#settings">
-          <span>Settings</span>
-          <i className="ri-settings-3-line" />
-        </a>
-      </div>
-      <div className={`nav__link nav__link--about ${activeLink === "about" ? "active" : ""}`} onClick={handleClick}>
-        <a href="#about">
-          <span>About</span>
-          <i className="ri-user-line" />
-        </a>
-      </div>
+      <NavLink
+        name="watchlist"
+        icon="ri-apps-2-line"
+        activeLink={activeLink}
+        handleClick={handleClick}
+        handleKeyDown={handleKeyDown}
+      />
+      <NavLink
+        name="alerts"
+        icon="ri-alarm-line"
+        activeLink={activeLink}
+        handleClick={handleClick}
+        handleKeyDown={handleKeyDown}
+      />
+      <NavLink
+        name="settings"
+        icon="ri-settings-3-line"
+        activeLink={activeLink}
+        handleClick={handleClick}
+        handleKeyDown={handleKeyDown}
+      />
+      <NavLink
+        name="about"
+        icon="ri-user-line"
+        activeLink={activeLink}
+        handleClick={handleClick}
+        handleKeyDown={handleKeyDown}
+      />
     </div>
   );
 }
 
-function NavIcons(props) {
-  return <div className="nav__icons">{props.children}</div>;
+function NavIcons({ children }) {
+  return <div className="nav__icons">{children}</div>;
 }
 
 function Theme() {
-  const [theme, setTheme] = useState(getFromLocalStorage("theme") || "dark");
+  const [theme, setTheme] = useState(getFromLocalStorage('theme') || 'dark');
   const moonIcon = useRef(null);
   const sunIcon = useRef(null);
 
   useEffect(() => {
-    const html = document.querySelector("html");
+    const html = document.querySelector('html');
 
-    addToLocalStorage("theme", theme);
+    addToLocalStorage('theme', theme);
 
     if (html.dataset.theme !== theme) {
-      if (theme === "light") {
-        html.dataset.theme = "light";
-        sunIcon.current.classList.remove("active");
-        moonIcon.current.classList.add("active");
+      if (theme === 'light') {
+        html.dataset.theme = 'light';
+        sunIcon.current.classList.remove('active');
+        moonIcon.current.classList.add('active');
       } else {
-        html.dataset.theme = "dark";
-        moonIcon.current.classList.remove("active");
-        sunIcon.current.classList.add("active");
+        html.dataset.theme = 'dark';
+        moonIcon.current.classList.remove('active');
+        sunIcon.current.classList.add('active');
       }
     }
   }, [theme]);
 
   const themeToggleHandler = () => {
-    setTheme(theme === "light" ? "dark" : "light");
+    setTheme(theme === 'light' ? 'dark' : 'light');
+  };
+
+  const keyDownHandler = (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      themeToggleHandler();
+    }
   };
 
   return (
-    <div className="nav__theme" onClick={themeToggleHandler}>
+    <div
+      className="nav__theme"
+      onClick={themeToggleHandler}
+      onKeyDown={keyDownHandler}
+      role="button"
+      tabIndex={0}
+    >
       {/* Moon Icon */}
       <svg
         ref={moonIcon}
@@ -138,11 +178,11 @@ function Notification({ primaryNotification, onBellClick, showNotificationWindow
   const notificationLightRef = useRef(null);
 
   const addNotificationLight = () => {
-    notificationLightRef.current.classList.add("active");
+    notificationLightRef.current.classList.add('active');
   };
 
   const removeNotificationLight = () => {
-    notificationLightRef.current.classList.remove("active");
+    notificationLightRef.current.classList.remove('active');
   };
 
   const handleBellClick = () => {
@@ -159,10 +199,10 @@ function Notification({ primaryNotification, onBellClick, showNotificationWindow
       }
     }
 
-    document.addEventListener("click", handleOutsideClick);
+    document.addEventListener('click', handleOutsideClick);
 
     return () => {
-      document.removeEventListener("click", handleOutsideClick);
+      document.removeEventListener('click', handleOutsideClick);
     };
   }, [showNotificationWindow]);
 
@@ -172,9 +212,29 @@ function Notification({ primaryNotification, onBellClick, showNotificationWindow
     }
   }, [primaryNotification]);
 
+  const keyDownHandler = (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleBellClick();
+    }
+  };
+
   return (
-    <div className="nav__notification" onClick={handleBellClick} ref={notificationBellRef}>
-      <svg className="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={16} height={16}>
+    <div
+      className="nav__notification"
+      onClick={handleBellClick}
+      ref={notificationBellRef}
+      onKeyDown={keyDownHandler}
+      role="button"
+      tabIndex={0}
+    >
+      <svg
+        className=""
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        width={16}
+        height={16}
+      >
         <path fill="none" d="M0 0h24v24H0z" />
         <path d="M20 17h2v2H2v-2h2v-7a8 8 0 1 1 16 0v7zm-2 0v-7a6 6 0 1 0-12 0v7h12zm-9 4h6v2H9v-2z" />
       </svg>
@@ -183,7 +243,12 @@ function Notification({ primaryNotification, onBellClick, showNotificationWindow
   );
 }
 
-function Header({ primaryNotification, activeSectionHandler, onBellClick, showNotificationWindow }) {
+function Header({
+  primaryNotification,
+  activeSectionHandler,
+  onBellClick,
+  showNotificationWindow,
+}) {
   return (
     <header className="header" id="header">
       <nav className="nav container">

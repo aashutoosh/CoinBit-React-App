@@ -1,27 +1,28 @@
-import { getFromLocalStorage } from "./localStorageUtils";
+import { getFromLocalStorage } from './localStorageUtils';
 
 export function getSubscribedSymbols() {
-    const watchlistSymbols = getFromLocalStorage("watchlist") || [];
-    const pendingAlertsSymbols = getFromLocalStorage("pendingAlerts")?.map(({ symbol }) => symbol) || [];
+  const watchlistSymbols = getFromLocalStorage('watchlist') || [];
+  const pendingAlerts = getFromLocalStorage('pendingAlerts') || [];
+  const pendingAlertsSymbols = pendingAlerts.map((alert) => alert.symbol);
 
-    return { watchlist: watchlistSymbols, pendingAlerts: pendingAlertsSymbols };
+  return { watchlist: watchlistSymbols, pendingAlerts: pendingAlertsSymbols };
 }
 
 export function getUniqueSymbolsArray(symbolsObject) {
-    const allSymbols = [...symbolsObject.watchlist, ...symbolsObject.pendingAlerts];
-    const allUniqueSymbols = [...new Set(allSymbols)];
+  const allSymbols = [...symbolsObject.watchlist, ...symbolsObject.pendingAlerts];
+  const allUniqueSymbols = [...new Set(allSymbols)];
 
-    return allUniqueSymbols;
+  return allUniqueSymbols;
 }
 
 export function getUniqueSymbols() {
-    const symbolsObject = getSubscribedSymbols();
-    return getUniqueSymbolsArray(symbolsObject);
+  const symbolsObject = getSubscribedSymbols();
+  return getUniqueSymbolsArray(symbolsObject);
 }
 
 export function getAllAlerts() {
-    return {
-        pendingAlerts: getFromLocalStorage("pendingAlerts") || [],
-        triggeredAlerts: getFromLocalStorage("triggeredAlerts") || [],
-    };
+  return {
+    pendingAlerts: getFromLocalStorage('pendingAlerts') || [],
+    triggeredAlerts: getFromLocalStorage('triggeredAlerts') || [],
+  };
 }

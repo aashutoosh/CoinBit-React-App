@@ -1,15 +1,25 @@
-import React, { useEffect, useState, useRef, useContext } from "react";
-import { fetchAllSymbols } from "../../binance";
-import { WebSocketContext } from "../../context/websocketContext";
-import { addToLocalStorage, getFromLocalStorage, updateLocalStorage } from "../../utils/localStorageUtils";
-import SearchResults from "../SearchResult/SearchResult";
-import "./watchlist.scss";
+import React, { useEffect, useState, useRef, useContext } from 'react';
+import { fetchAllSymbols } from '../../binance';
+import { WebSocketContext } from '../../context/websocketContext';
+import {
+  addToLocalStorage,
+  getFromLocalStorage,
+  updateLocalStorage,
+} from '../../utils/localStorageUtils';
+import SearchResults from '../SearchResult/SearchResult';
+import './watchlist.scss';
 
 function WatchlistSearchInput({ queryString, inputHandler, searchInputRef }) {
   return (
     <div className="watchlist__search" ref={searchInputRef}>
       <span>
-        <svg className="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={14} height={14}>
+        <svg
+          className=""
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          width={14}
+          height={14}
+        >
           <path fill="none" d="M0 0h24v24H0z" />
           <path
             d="M18.031 16.617l4.283 4.282-1.415 1.415-4.282-4.283A8.96 8.96 0 0 1 11 20c-4.968 0-9-4.032-9-9s4.032-9 9-9 9 4.032 9 9a8.96 8.96 0 0 1-1.969 5.617zm-2.006-.742A6.977 6.977 0 0 0 18 11c0-3.868-3.133-7-7-7-3.868 0-7 3.132-7 7 0 3.867 3.132 7 7 7a6.977 6.977 0 0 0 4.875-1.975l.15-.15z"
@@ -28,39 +38,68 @@ function WatchlistSearchInput({ queryString, inputHandler, searchInputRef }) {
   );
 }
 
-function WatchlistItems({ watchlistSymbols, deleteItems, watchlistData }) {
+function WatchlistItems({ watchlistSymbols, itemsAction, watchlistData }) {
   const watchlistItems = watchlistSymbols.map((symbol) => {
     const symbolData = watchlistData[symbol];
     return (
-      <li className="watchlist__item symbol " key={symbol}>
+      // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+      <li className="watchlist__item symbol " key={symbol} tabIndex={0} aria-label={symbol}>
         <span className="symbol__name">{symbol}</span>
         <div className="symbol__price">
-          <span className={`symbol__price--latest ${symbolData?.priceColor}`}>{symbolData?.price || "0.0"}</span>
+          <span className={`symbol__price--latest ${symbolData?.priceColor}`}>
+            {symbolData?.price || '0.0'}
+          </span>
           <div>
             <span className={`symbol__price--24change ${symbolData?.priceChangeColor}`}>
-              ({symbolData?.priceChange || "0.0"}%)
+              ({symbolData?.priceChange || '0.0'}%)
             </span>
-            <i className={`symbol__price--direction ${symbolData?.direction} ${symbolData?.priceChangeColor}`} />
+            <i
+              className={`symbol__price--direction ${symbolData?.direction} ${symbolData?.priceChangeColor}`}
+            />
           </div>
         </div>
         <div className="symbol__action">
-          <i className="createNewAlert button__item button__item--green ri-alarm-line" />
-          <i className="delete button__item button__item--red ri-delete-bin-6-line" />
+          <i
+            className="createNewAlert button__item button__item--green ri-alarm-line"
+            role="button"
+            tabIndex={0}
+            aria-label={`Create alert for ${symbol}`}
+          />
+          <i
+            className="delete button__item button__item--red ri-delete-bin-6-line"
+            tabIndex={0}
+            role="button"
+            aria-label={`Delete ${symbol} from watchlist`}
+          />
         </div>
       </li>
     );
   });
+
+  const keyActionHandler = (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      itemsAction(event);
+    }
+  };
+
   return (
-    <ul className="watchlist__items" onClick={deleteItems}>
+    <ul
+      className="watchlist__items"
+      onClick={itemsAction}
+      onKeyDown={keyActionHandler}
+      role="listbox"
+      aria-label="Watchlist Symbols"
+    >
       {watchlistItems}
     </ul>
   );
 }
 
 export default function Watchlist({ createAlert, activeSection, websocketActions }) {
-  const [queryString, setQueryString] = useState("");
+  const [queryString, setQueryString] = useState('');
   const [exchangeSymbols, setExchangeSymbols] = useState([]);
-  const [watchlistSymbols, setWatchlistSymbols] = useState(getFromLocalStorage("watchlist") || []);
+  const [watchlistSymbols, setWatchlistSymbols] = useState(getFromLocalStorage('watchlist') || []);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [watchlistData, setWatchlistData] = useState({});
   const searchInputRef = useRef(null);
@@ -70,13 +109,13 @@ export default function Watchlist({ createAlert, activeSection, websocketActions
 
   useEffect(() => {
     const initialData = {};
-    watchlistSymbols.map((symbol) => {
+    watchlistSymbols.forEach((symbol) => {
       initialData[symbol] = {
         price: 0.0,
-        priceColor: "",
+        priceColor: '',
         priceChange: 0.0,
-        priceChangeColor: "",
-        direction: "ri-arrow-up-s-fill",
+        priceChangeColor: '',
+        direction: 'ri-arrow-up-s-fill',
       };
     });
     setWatchlistData(initialData);
@@ -84,17 +123,22 @@ export default function Watchlist({ createAlert, activeSection, websocketActions
 
   useEffect(() => {
     if (wsData) {
-      const prevData = watchlistData[wsData.data.s];
-      const currentPrice = Number(wsData.data.c);
-      const currentPiceChange = Number(wsData.data.P);
+      const { data } = wsData;
+      const { s: symbol, c: currentPrice, P: currentPriceChange } = data;
+      const prevData = watchlistData[symbol];
+      let priceColor = '';
+      if (prevData?.price) {
+        priceColor = currentPrice > prevData.price ? 'green' : 'red';
+      }
+
       const newSymbolData = {
-        price: currentPrice,
-        priceColor: prevData?.price ? (currentPrice > prevData.price ? "green" : "red") : "",
-        priceChange: currentPiceChange,
-        priceChangeColor: currentPiceChange > 0 ? "green" : "red",
-        direction: currentPiceChange > 0 ? "ri-arrow-up-s-fill" : "ri-arrow-down-s-fill",
+        price: Number(currentPrice),
+        priceColor,
+        priceChange: Number(currentPriceChange),
+        priceChangeColor: currentPriceChange > 0 ? 'green' : 'red',
+        direction: currentPriceChange > 0 ? 'ri-arrow-up-s-fill' : 'ri-arrow-down-s-fill',
       };
-      setWatchlistData({ ...watchlistData, [wsData.data.s]: newSymbolData });
+      setWatchlistData({ ...watchlistData, [symbol]: newSymbolData });
     }
   }, [wsData]);
 
@@ -106,49 +150,72 @@ export default function Watchlist({ createAlert, activeSection, websocketActions
   const addToWatchlistHandler = (symbol) => {
     if (!watchlistSymbols.includes(symbol)) {
       setWatchlistSymbols((prevSymbols) => [...prevSymbols, symbol]);
-      addToLocalStorage("watchlist", [...watchlistSymbols, symbol]);
+      addToLocalStorage('watchlist', [...watchlistSymbols, symbol]);
 
       websocketActions.wsSubscribe(symbol);
     }
   };
 
-  const deleteFromWatchlistHandler = (event) => {
-    if (event.target.classList.contains("delete")) {
-      const listElement = event.target.closest(".watchlist__item");
-      const selectedSymbol = listElement.querySelector(".symbol__name").textContent;
+  const watchlistActionHandler = (event) => {
+    if (event.target.classList.contains('delete')) {
+      const listElement = event.target.closest('.watchlist__item');
+      const selectedSymbol = listElement.querySelector('.symbol__name').textContent;
       const filteredSymbols = watchlistSymbols.filter((symbol) => symbol !== selectedSymbol);
 
-      websocketActions.wsUnsubscribe(selectedSymbol, "watchlist");
-      updateLocalStorage("watchlist", filteredSymbols);
-      setWatchlistSymbols((prevSymbols) => prevSymbols.filter((symbol) => symbol !== selectedSymbol));
+      websocketActions.wsUnsubscribe(selectedSymbol, 'watchlist');
+      updateLocalStorage('watchlist', filteredSymbols);
+      setWatchlistSymbols((prevSymbols) =>
+        prevSymbols.filter((symbol) => symbol !== selectedSymbol),
+      );
 
       const updatedData = { ...watchlistData };
       delete updatedData[selectedSymbol];
       setWatchlistData(updatedData);
-    } else if (event.target.classList.contains("createNewAlert")) {
-      const listElement = event.target.closest(".watchlist__item");
-      const selectedSymbol = listElement.querySelector(".symbol__name").textContent;
+    } else if (event.target.classList.contains('createNewAlert')) {
+      const listElement = event.target.closest('.watchlist__item');
+      const selectedSymbol = listElement.querySelector('.symbol__name').textContent;
       createAlert({
-        type: "create",
+        type: 'create',
         symbol: selectedSymbol,
       });
     }
   };
 
   useEffect(() => {
-    fetchAllSymbols().then((fetchedSymbols) => setExchangeSymbols(fetchedSymbols));
+    if (exchangeSymbols.length === 0) {
+      fetchAllSymbols().then((fetchedSymbols) => setExchangeSymbols(fetchedSymbols));
+    }
+  }, [queryString]);
 
-    // Hides searchResults when clicked outside of searchInput or searchResults
-    document.addEventListener("mousedown", (event) => {
-      if (searchInputRef.current?.contains(event.target) || searchResultRef.current?.contains(event.target)) return;
+  useEffect(() => {
+    const handleMouseDown = (event) => {
+      if (
+        searchInputRef.current?.contains(event.target) ||
+        searchResultRef.current?.contains(event.target)
+      )
+        return;
 
       setShowSearchResults(false);
-      setQueryString("");
-    });
+      setQueryString('');
+    };
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setShowSearchResults(false);
+        setQueryString('');
+      }
+    };
+
+    // Hides searchResults when clicked outside of searchInput or searchResults
+    document.addEventListener('mousedown', handleMouseDown);
+    document.addEventListener('keydown', handleKeyDown);
   }, []);
 
   return (
-    <section className={`watchlist leftside ${activeSection === "watchlist" ? "showsection" : ""}`} id="watchlist">
+    <section
+      className={`watchlist leftside ${activeSection === 'watchlist' ? 'showsection' : ''}`}
+      id="watchlist"
+    >
       <WatchlistSearchInput
         queryString={queryString}
         inputHandler={searchInputHandler}
@@ -166,7 +233,7 @@ export default function Watchlist({ createAlert, activeSection, websocketActions
 
       <WatchlistItems
         watchlistSymbols={watchlistSymbols}
-        deleteItems={deleteFromWatchlistHandler}
+        itemsAction={watchlistActionHandler}
         watchlistData={watchlistData}
       />
     </section>

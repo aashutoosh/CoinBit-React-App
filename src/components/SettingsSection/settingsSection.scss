@@ -1,175 +1,175 @@
 .settings {
-    display: none;
-    overflow-y: auto;
+  display: none;
+  overflow-y: auto;
 }
 
 .discord {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 
-    &__label {
-        display: inline-block;
-        width: 15rem;
+  &__label {
+    display: inline-block;
+    width: 15rem;
 
-        @media screen and (max-width: 991px) {
-            width: 12rem;
-        }
+    @media screen and (max-width: 991px) {
+      width: 12rem;
+    }
+  }
+
+  input[type='checkbox'] {
+    position: relative;
+    cursor: pointer;
+    width: 2.4rem;
+    height: 1.2rem;
+    -webkit-appearance: none;
+    outline: none;
+    border-radius: 0.75rem;
+    background-color: var(--textDark-900);
+    transition: background-color 0.3s;
+
+    &:before {
+      content: '';
+      position: absolute;
+      width: 0.8rem;
+      height: 0.8rem;
+      top: 50%;
+      transform: translateY(-50%);
+      left: 3px;
+      background-color: white;
+      border-radius: 50%;
+      transition: left 0.3s;
     }
 
-    input[type="checkbox"] {
-        position: relative;
-        cursor: pointer;
-        width: 2.4rem;
-        height: 1.2rem;
-        -webkit-appearance: none;
-        outline: none;
-        border-radius: 0.75rem;
-        background-color: var(--textDark-900);
-        transition: background-color 0.3s;
+    &:checked {
+      // background-color: var(--textLight-100);
 
-        &:before {
-            content: '';
-            position: absolute;
-            width: 0.8rem;
-            height: 0.8rem;
-            top: 50%;
-            transform: translateY(-50%);
-            left: 3px;
-            background-color: white;
-            border-radius: 50%;
-            transition: left 0.3s;
-        }
-
-        &:checked {
-            // background-color: var(--textLight-100);
-
-            &:before {
-                background-color: var(--primary-100);
-                left: calc(100% - 0.8rem - 3px);
-            }
-        }
+      &:before {
+        background-color: var(--primary-100);
+        left: calc(100% - 0.8rem - 3px);
+      }
     }
+  }
 }
 
 .webhook {
+  position: relative;
+  display: flex;
+  align-items: center;
+  opacity: 0.2;
+  pointer-events: none;
+  transition: all 0.2s ease;
+
+  @media screen and (max-width: 575px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  &.show {
+    opacity: 1;
+    pointer-events: initial;
+  }
+
+  &__label {
+    display: flex;
+    width: 15rem;
+    align-items: center;
+    gap: 0.25rem;
+
+    @media screen and (max-width: 991px) {
+      width: 12rem;
+    }
+
+    i {
+      opacity: 1;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:hover {
+        color: var(--primary-100);
+      }
+
+      &:hover ~ .tooltip {
+        opacity: 1;
+      }
+    }
+  }
+
+  .tooltip {
+    pointer-events: none;
+    opacity: 0;
+    position: fixed;
+    top: 8.8rem;
+    left: 60%;
+    transform: translate(-50%, -50%);
+    background-color: var(--background-100);
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    width: 18rem;
+    z-index: var(--z-modal);
+    transition: all 0.3s;
+
+    @media screen and (max-width: 768px) {
+      left: 50%;
+    }
+
+    span {
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    ul li {
+      padding-top: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 400;
+      line-height: 1;
+    }
+  }
+
+  &__input {
     position: relative;
     display: flex;
     align-items: center;
-    opacity: 0.2;
-    pointer-events: none;
-    transition: all 0.2s ease;
+    gap: 1rem;
 
-    @media screen and (max-width: 575px) {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
+    .save__url {
+      cursor: pointer;
+      padding: 0.25rem 0.5rem;
+      background-color: var(--primary-100);
+      color: var(--background-900);
+      border-radius: 4px;
+      font-size: 0.9rem;
+      transition: 0.2s;
+
+      &:hover {
+        background-color: var(--primary-300);
+      }
     }
 
-    &.show {
-        opacity: 1;
-        pointer-events: initial;
+    i {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--textLight-900);
     }
+  }
 
-    &__label {
-        display: flex;
-        width: 15rem;
-        align-items: center;
-        gap: 0.25rem;
+  input {
+    background-color: inherit;
+    outline: none;
+    border: none;
+    color: inherit;
+    font-weight: 400;
+    width: 15rem;
+    height: 2rem;
+    font-size: 0.9rem;
+    padding-left: 1.5rem;
+    border-bottom: 1px solid var(--border);
 
-        @media screen and (max-width: 991px) {
-            width: 12rem;
-        }
-
-        i {
-            opacity: 1;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: all 0.2s;
-
-            &:hover {
-                color: var(--primary-100);
-            }
-
-            &:hover~.tooltip {
-                opacity: 1;
-            }
-        }
+    @media screen and (max-width: 991px) {
+      width: 12rem;
     }
-
-    .tooltip {
-        pointer-events: none;
-        opacity: 0;
-        position: fixed;
-        top: 8.8rem;
-        left: 60%;
-        transform: translate(-50%, -50%);
-        background-color: var(--background-100);
-        padding: 0.5rem 1rem;
-        border-radius: 0.5rem;
-        width: 18rem;
-        z-index: var(--z-modal);
-        transition: all 0.3s;
-
-        @media screen and (max-width: 768px) {
-            left: 50%;
-        }
-
-        span {
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        ul li {
-            padding-top: .5rem;
-            font-size: 0.8rem;
-            font-weight: 400;
-            line-height: 1;
-        }
-    }
-
-    &__input {
-        position: relative;
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-
-        .save__url {
-            cursor: pointer;
-            padding: 0.25rem 0.5rem;
-            background-color: var(--primary-100);
-            color: var(--background-900);
-            border-radius: 4px;
-            font-size: 0.9rem;
-            transition: 0.2s;
-
-            &:hover {
-                background-color: var(--primary-300);
-            }
-        }
-
-        i {
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--textLight-900);
-        }
-    }
-
-    input {
-        background-color: inherit;
-        outline: none;
-        border: none;
-        color: inherit;
-        font-weight: 400;
-        width: 15rem;
-        height: 2rem;
-        font-size: 0.9rem;
-        padding-left: 1.5rem;
-        border-bottom: 1px solid var(--border);
-
-        @media screen and (max-width: 991px) {
-            width: 12rem;
-        }
-    }
+  }
 }

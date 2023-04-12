@@ -1,13 +1,13 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { SecondaryNotificationsContext } from "../../context/secondaryNotificationsContext";
-import { WebSocketContext } from "../../context/websocketContext";
-import { getUniqueSymbols } from "../../utils/helper";
-import "./alertModal.scss";
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { SecondaryNotificationsContext } from '../../context/secondaryNotificationsContext';
+import { WebSocketContext } from '../../context/websocketContext';
+import { getUniqueSymbols } from '../../utils/helper';
+import './alertModal.scss';
 
 function AllSymbolsOptions() {
   const allSymbols = getUniqueSymbols();
   const symbolsOption = allSymbols.map((symbol) => (
-    <option value={symbol} key={symbol}>
+    <option value={symbol} key={symbol} tabIndex={0}>
       {symbol}
     </option>
   ));
@@ -15,16 +15,34 @@ function AllSymbolsOptions() {
   return symbolsOption;
 }
 
+function CloseButton({ closeHandler }) {
+  const closeButtonRef = useRef(null);
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') closeHandler();
+  };
+
+  return (
+    <i
+      ref={closeButtonRef}
+      className="alertmodal__close ri-close-line"
+      onClick={closeHandler}
+      onKeyDown={handleKeyDown}
+      role="button"
+      tabIndex={0}
+    />
+  );
+}
+
 function AlertModal({ modalObject, dispatchAlerts }) {
   const { secondaryNotification } = useContext(SecondaryNotificationsContext);
   const wsData = useContext(WebSocketContext);
-  const updateAlert = modalObject.type === "update";
+  const updateAlert = modalObject.type === 'update';
   const initialFormData = {
-    title: updateAlert ? modalObject.payload.title : "",
-    description: updateAlert ? modalObject.payload.description : "",
+    title: updateAlert ? modalObject.payload.title : '',
+    description: updateAlert ? modalObject.payload.description : '',
     symbol: updateAlert ? modalObject.payload.symbol : modalObject.symbol,
-    condition: updateAlert ? modalObject.payload.condition : ">=",
-    price: updateAlert ? modalObject.payload.price : "",
+    condition: updateAlert ? modalObject.payload.condition : '>=',
+    price: updateAlert ? modalObject.payload.price : '',
   };
 
   const [isVisible, setIsVisible] = useState(false);
@@ -32,14 +50,29 @@ function AlertModal({ modalObject, dispatchAlerts }) {
   const [priceData, setPriceData] = useState({});
   const modalRef = useRef(null);
 
+  const formDataRef = useRef(formData);
+  useEffect(() => {
+    formDataRef.current = formData;
+  }, [formData]);
+
+  const priceDataRef = useRef(priceData);
+  useEffect(() => {
+    priceDataRef.current = priceData;
+  }, [priceData]);
+
   useEffect(() => {
     if (wsData) {
-      const formSymbol = formData.symbol || getUniqueSymbols()?.[0];
-      if (wsData.data.s === formSymbol) {
-        const currentPrice = Number(wsData.data.c);
+      const { data } = wsData;
+      const formSymbol = formDataRef.current.symbol || getUniqueSymbols()?.[0];
+      if (data.s === formSymbol) {
+        const currentPrice = Number(data.c);
+        let priceColor = '';
+        if (priceDataRef.current?.price) {
+          priceColor = currentPrice > priceDataRef.current.price ? 'green' : 'red';
+        }
         const symbolData = {
           price: currentPrice,
-          priceColor: priceData?.price ? (currentPrice > priceData.price ? "green" : "red") : "",
+          priceColor,
         };
 
         setPriceData(symbolData);
@@ -51,13 +84,13 @@ function AlertModal({ modalObject, dispatchAlerts }) {
     setIsVisible(true);
     setFormData(initialFormData);
     setTimeout(() => {
-      modalRef.current.classList.remove("show");
-      modalRef.current.classList.add("show");
+      modalRef.current.classList.remove('show');
+      modalRef.current.classList.add('show');
     }, 100);
   };
 
   const hideModal = () => {
-    modalRef.current.classList.remove("show");
+    modalRef.current.classList.remove('show');
     setTimeout(() => {
       setIsVisible(false);
     }, 100);
@@ -79,26 +112,26 @@ function AlertModal({ modalObject, dispatchAlerts }) {
     event.preventDefault();
 
     const form = event.target;
-    const formData = new FormData(form);
+    const currentFormData = new FormData(form);
     const alertObject = {
-      title: formData.get("title"),
-      description: formData.get("description"),
-      symbol: formData.get("symbol"),
-      condition: formData.get("condition"),
-      price: formData.get("price"),
+      title: currentFormData.get('title'),
+      description: currentFormData.get('description'),
+      symbol: currentFormData.get('symbol'),
+      condition: currentFormData.get('condition'),
+      price: currentFormData.get('price'),
       createdon: Date.now(),
     };
 
     if (updateAlert) {
       dispatchAlerts({
-        type: "UPDATE_ALERT",
+        type: 'UPDATE_ALERT',
         payload: alertObject,
         alertKey: modalObject.payload.createdon,
         secondaryNotification,
       });
     } else {
       dispatchAlerts({
-        type: "ADD_ALERT",
+        type: 'ADD_ALERT',
         payload: alertObject,
         secondaryNotification,
       });
@@ -110,15 +143,17 @@ function AlertModal({ modalObject, dispatchAlerts }) {
   return (
     isVisible && (
       <section className="alertmodal" id="alertmodal" ref={modalRef}>
-        <h2 className="alertmodal__title">{`${modalObject.type === "create" ? "Create" : "Update"} Alert`}</h2>
-        <i className="alertmodal__close ri-close-line" onClick={hideModal} />
+        <h2 className="alertmodal__title">{`${
+          modalObject.type === 'create' ? 'Create' : 'Update'
+        } Alert`}</h2>
+        <CloseButton closeHandler={hideModal} />
         <form className="alertmodal__form" data-key="" autoComplete="off" onSubmit={handleSubmit}>
           <div className="alertmodal__form--fields">
             <input
+              id="title"
               type="text"
               className="input title"
               name="title"
-              id="title"
               onChange={handleInputChange}
               value={formData.title}
               required
@@ -155,7 +190,10 @@ function AlertModal({ modalObject, dispatchAlerts }) {
               <label htmlFor="modalSymbolSelect" className="label alertmodal__form--symbol">
                 Symbol
               </label>
-              <span id="modalSymbolPrice" className={`alertmodal__form--price ${priceData.priceColor}`}>
+              <span
+                id="modalSymbolPrice"
+                className={`alertmodal__form--price ${priceData.priceColor}`}
+              >
                 {priceData.price}
               </span>
             </div>
@@ -195,7 +233,7 @@ function AlertModal({ modalObject, dispatchAlerts }) {
             </label>
           </div>
           <button className="alertmodal__form--submit" type="submit">
-            {`${modalObject.type === "create" ? "Create" : "Update"}`}
+            {`${modalObject.type === 'create' ? 'Create' : 'Update'}`}
           </button>
         </form>
       </section>

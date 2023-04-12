@@ -1,24 +1,39 @@
 .button {
-    &__item {
-        padding: 0.1rem 0.5rem;
-        border-radius: 4px;
-        transition: all 0.2s;
-        border: 1px solid var(--background-100);
+  &__item {
+    padding: 0.1rem 0.5rem;
+    border-radius: 4px;
+    transition: all 0.2s;
+    border: 1px solid var(--background-100);
 
-        &--green {
+    &--green {
+      &:hover {
+        border: 1px solid var(--green-300);
+        background-color: var(--green-300);
+      }
 
-            &:hover {
-                border: 1px solid var(--green-300);
-                background-color: var(--green-300);
-            }
-        }
+      &:focus {
+        outline-offset: 2px;
+      }
 
-        &--red {
+      &:focus:not(:focus-visible) .button__item {
+        outline: none;
+      }
 
-            &:hover {
-                border: 1px solid var(--red-300);
-                background-color: var(--red-300);
-            }
-        }
     }
+
+    &--red {
+      &:hover {
+        border: 1px solid var(--red-300);
+        background-color: var(--red-300);
+      }
+
+      &:focus {
+        outline-offset: 2px;
+      }
+
+      &:focus:not(:focus-visible) .button__item {
+        outline: none;
+      }
+    }
+  }
 }

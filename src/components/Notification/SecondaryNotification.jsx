@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
-import { SECONDARY_NOTIFICATION_SEC } from "../../config";
+import React, { useEffect, useRef, useState } from 'react';
+import { SECONDARY_NOTIFICATION_SEC } from '../../config';
 
-import "./secondaryNotification.scss";
+import './secondaryNotification.scss';
 
 function SecondaryNotification({ notification }) {
-  const message = notification.message;
-  const icon = notification.icon ? notification.icon : "ri-notification-4-line";
+  const { message } = notification;
+  const icon = notification.icon ? notification.icon : 'ri-notification-4-line';
   const [isVisible, setIsVisible] = useState(false);
   const notfElement = useRef(null);
 
@@ -14,8 +14,8 @@ function SecondaryNotification({ notification }) {
 
     if (isVisible) {
       timeoutId = setTimeout(() => {
-        notfElement.current.classList.remove("show");
-        notfElement.current.classList.add("hide");
+        notfElement.current.classList.remove('show');
+        notfElement.current.classList.add('hide');
 
         setTimeout(() => {
           setIsVisible(false);
@@ -23,9 +23,7 @@ function SecondaryNotification({ notification }) {
       }, SECONDARY_NOTIFICATION_SEC);
     }
 
-    if (timeoutId) {
-      return () => clearTimeout(timeoutId);
-    }
+    return () => clearTimeout(timeoutId);
   }, [isVisible, message]);
 
   useEffect(() => {
@@ -39,14 +37,12 @@ function SecondaryNotification({ notification }) {
   }, [notification]);
 
   return (
-    <>
-      {isVisible && (
-        <div className="secondary__notification show" ref={notfElement}>
-          <i className={`icon ${icon}`}></i>
-          <span className="message">{message}</span>
-        </div>
-      )}
-    </>
+    isVisible && (
+      <div className="secondary__notification show" ref={notfElement}>
+        <i className={`icon ${icon}`} />
+        <span className="message">{message}</span>
+      </div>
+    )
   );
 }
 

@@ -1,8 +1,8 @@
-import { SecondaryNotificationsContext } from "../../context/secondaryNotificationsContext";
-import { getFromLocalStorage, updateLocalStorage } from "../../utils/localStorageUtils";
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { VALID_WEBHOOK_STARTSWITH } from "../../config";
-import "./settingsSection.scss";
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { SecondaryNotificationsContext } from '../../context/secondaryNotificationsContext';
+import { getFromLocalStorage, updateLocalStorage } from '../../utils/localStorageUtils';
+import { VALID_WEBHOOK_STARTSWITH } from '../../config';
+import './settingsSection.scss';
 
 function Heading() {
   return (
@@ -42,19 +42,19 @@ function DiscordToggle({ discordChecked, onToggle }) {
 
 function WebhookInput({ discordChecked }) {
   const { secondaryNotification } = useContext(SecondaryNotificationsContext);
-  const [webhookUrl, setWebhookUrl] = useState(getFromLocalStorage("discordWebhookUrl") || "");
+  const [webhookUrl, setWebhookUrl] = useState(getFromLocalStorage('discordWebhookUrl') || '');
 
   const updateWebhookUrl = () => {
     const url = webhookUrl.trim();
 
     const isValidWebhookUrl = url.startsWith(VALID_WEBHOOK_STARTSWITH);
-    if (!isValidWebhookUrl && !(url === "")) {
-      secondaryNotification("Please enter a valid Discord webhook URL.", "ri-error-warning-line");
+    if (!isValidWebhookUrl && !(url === '')) {
+      secondaryNotification('Please enter a valid Discord webhook URL.', 'ri-error-warning-line');
       return;
     }
 
-    updateLocalStorage("discordWebhookUrl", url);
-    secondaryNotification("Webhook URL saved!", "ri-checkbox-circle-line");
+    updateLocalStorage('discordWebhookUrl', url);
+    secondaryNotification('Webhook URL saved!', 'ri-checkbox-circle-line');
   };
 
   const onInputChange = (event) => {
@@ -62,7 +62,7 @@ function WebhookInput({ discordChecked }) {
   };
 
   return (
-    <div className={`webhook ${discordChecked ? "show" : ""}`}>
+    <div className={`webhook ${discordChecked ? 'show' : ''}`}>
       <label className="webhook__label" htmlFor="webhookURL">
         <span>Discord Webhook URL</span> <i className="ri-question-line" />
         <div className="tooltip">
@@ -77,9 +77,15 @@ function WebhookInput({ discordChecked }) {
         </div>
       </label>
       <div className="webhook__input">
-        <input type="text" name="webhookURL" id="webhookURL" value={webhookUrl} onChange={onInputChange} />
+        <input
+          type="text"
+          name="webhookURL"
+          id="webhookURL"
+          value={webhookUrl}
+          onChange={onInputChange}
+        />
         <i className="ri-link-m" />
-        <button className="save__url" onClick={updateWebhookUrl}>
+        <button className="save__url" type="button" onClick={updateWebhookUrl}>
           Save
         </button>
       </div>
@@ -88,18 +94,23 @@ function WebhookInput({ discordChecked }) {
 }
 
 function SettingsSection({ activeSection }) {
-  const [discordChecked, setDiscordChecked] = useState(getFromLocalStorage("sendDiscordAlerts") || false);
+  const [discordChecked, setDiscordChecked] = useState(
+    getFromLocalStorage('sendDiscordAlerts') || false,
+  );
 
   const toggleDiscordCheckbox = () => {
     setDiscordChecked(!discordChecked);
   };
 
   useEffect(() => {
-    updateLocalStorage("sendDiscordAlerts", discordChecked);
+    updateLocalStorage('sendDiscordAlerts', discordChecked);
   }, [discordChecked]);
 
   return (
-    <section className={`settings rightside ${activeSection === "settings" ? "showsection" : ""}`} id="settings">
+    <section
+      className={`settings rightside ${activeSection === 'settings' ? 'showsection' : ''}`}
+      id="settings"
+    >
       <Heading />
       <div className="rightside__container">
         <DiscordToggle discordChecked={discordChecked} onToggle={toggleDiscordCheckbox} />

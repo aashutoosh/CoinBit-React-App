@@ -1,201 +1,204 @@
 header {
-    position: sticky;
-    top: 0;
-    z-index: var(--z-header);
-    background-color: var(--background-500);
-    box-shadow: var(--box-shadow-header);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
+  background-color: var(--background-500);
+  box-shadow: var(--box-shadow-header);
 }
 
 .nav {
+  display: flex;
+  justify-content: space-between;
+  height: var(--header-height);
+
+  &__left {
     display: flex;
-    justify-content: space-between;
-    height: var(--header-height);
+    align-items: center;
+    width: var(--left-width);
+  }
 
-    &__left {
+  &__logo {
+    display: flex;
+    align-items: center;
+    padding-left: 1rem;
+
+    &--icon {
+      margin-right: 0.5rem;
+
+      path:nth-child(2) {
+        fill: var(--primary-100);
+      }
+    }
+
+    &--title {
+      font-size: var(--h3-font-size);
+      font-weight: 700;
+    }
+  }
+
+  &__links {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 1rem;
+    gap: 1rem;
+  }
+
+  .links__container {
+    display: flex;
+    align-items: center;
+    color: var(--textLight-300);
+
+    .nav__link {
+      padding: 0 1rem;
+      border-right: 1px solid var(--border);
+      background-color: transparent;
+
+      &:focus {
+        outline-offset: 0px;
+      }
+
+      div {
         display: flex;
+        flex-direction: column-reverse;
         align-items: center;
-        width: var(--left-width);
-    }
+        gap: 0.3rem;
 
-    &__logo {
-        display: flex;
-        align-items: center;
-        padding-left: 1rem;
-
-        &--icon {
-            margin-right: 0.5rem;
-
-            path:nth-child(2) {
-                fill: var(--primary-100);
-            }
+        span {
+          text-transform: capitalize;
         }
 
-        &--title {
-            font-size: var(--h3-font-size);
-            font-weight: 700;
-        }
-    }
+        i {
+          font-size: 1.1rem;
 
-
-    &__links {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        padding-right: 1rem;
-        gap: 1rem;
-    }
-
-    .links__container {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        color: var(--textLight-300);
-
-        .nav__link {
-            padding-right: 1rem;
-            border-right: 1px solid var(--border);
-
-
-            a {
-                display: flex;
-                flex-direction: column-reverse;
-                align-items: center;
-                gap: 0.3rem;
-
-                i {
-                    font-size: 1.1rem;
-
-                    @media screen and (min-width: 575px) {
-                        display: none;
-                    }
-                }
-            }
-        }
-
-        @media screen and (max-width: 575px) {
-            position: fixed;
-            left: 0;
-            bottom: 0;
-            z-index: var(--z-modal);
-            background-color: var(--background-500);
-            width: 100%;
-            border: none;
-            display: flex;
-            justify-content: space-around;
-            height: var(--header-height);
-            border-top: 1px solid var(--textDark-900);
-
-            .nav__link {
-                padding-right: 0;
-                border-right: none;
-            }
-        }
-    }
-
-    &__link {
-        font-size: var(--small-font-size);
-        padding-right: 1rem;
-        transition: color 0.3s;
-
-        &:hover {
-            color: var(--primary-100);
-        }
-
-        &:last-child {
-            padding-right: 0;
-        }
-    }
-
-    &__link--watchlist {
-        @media screen and (min-width: 768px) {
+          @media screen and (min-width: 575px) {
             display: none;
+          }
         }
+      }
     }
 
-    &__theme {
-        position: relative;
-        width: 16px;
-        padding: 1rem;
+    @media screen and (max-width: 575px) {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      z-index: var(--z-modal);
+      background-color: var(--background-500);
+      width: 100%;
+      border: none;
+      display: flex;
+      justify-content: space-around;
+      height: var(--header-height);
+      border-top: 1px solid var(--textDark-900);
 
-        .icon {
-            position: absolute;
-            left: 0;
-            pointer-events: none;
-            transition: 0.3s ease;
-        }
+      .nav__link {
+        border-right: none;
+      }
+    }
+  }
 
-        .icon-moon {
-            transform: translateY(2rem);
-            opacity: 0;
-        }
+  &__link {
+    font-size: var(--small-font-size);
+    padding-right: 1rem;
+    transition: color 0.3s;
 
-        .icon-sun {
-            transform: translateY(-2rem);
-            opacity: 0;
-        }
-
-        .icon-sun.active,
-        .icon-moon.active {
-            transform: translateY(0);
-        }
-
-        .active {
-            opacity: 1;
-            pointer-events: initial;
-        }
+    &:hover {
+      color: var(--primary-100);
     }
 
-    &__icons {
-        display: flex;
-        gap: 1rem;
+    &:last-child {
+      padding-right: 0;
+    }
+  }
+
+  &__link--watchlist {
+    @media screen and (min-width: 768px) {
+      display: none;
+    }
+  }
+
+  &__theme {
+    position: relative;
+    width: 16px;
+    // padding: 1rem;
+
+    .icon {
+      position: absolute;
+      left: 0;
+      pointer-events: none;
+      transition: transform 0.3s ease;
     }
 
-    &__notification {
-        position: relative;
-        padding: 1rem 0;
-        fill: var(--textLight-300);
-        cursor: pointer;
-
-        // Animate just svg when hover or when tapped on phone
-        &:hover svg,
-        &:active svg {
-            fill: var(--primary-100);
-            animation: ring 4s .2s ease-in-out;
-            transform-origin: 50% 4px;
-        }
-
-        &--light {
-            position: absolute;
-            top: 0.7rem;
-            right: -0.3rem;
-            content: '';
-            width: 0.4rem;
-            height: 0.4rem;
-            background-color: red;
-            border-radius: 50%;
-            box-sizing: content-box;
-            border: 3px solid var(--background-500);
-            display: none;
-        }
-
-        .active {
-            display: initial;
-        }
+    .icon-moon {
+      transform: translateY(2rem);
+      opacity: 0;
     }
 
-    &__theme {
-        position: relative;
-        padding: 1rem 0;
-        cursor: pointer;
-        fill: var(--textLight-300);
+    .icon-sun {
+      transform: translateY(-2rem);
+      opacity: 0;
+    }
 
-        &:hover svg,
-        &:active svg {
-            fill: var(--primary-100);
-        }
+    .icon-sun.active,
+    .icon-moon.active {
+      transform: translateY(0);
     }
 
     .active {
-        color: var(--primary-100);
+      opacity: 1;
+      pointer-events: initial;
     }
+  }
+
+  &__icons {
+    display: flex;
+    gap: 1rem;
+  }
+
+  &__notification {
+    position: relative;
+    fill: var(--textLight-300);
+    cursor: pointer;
+
+    // Animate just svg when hover or when tapped on phone
+    &:hover svg,
+    &:active svg {
+      fill: var(--primary-100);
+      animation: ring 4s 0.2s ease-in-out;
+      transform-origin: 50% 4px;
+    }
+
+    &--light {
+      position: absolute;
+      top: -0.3rem;
+      right: -0.3rem;
+      content: '';
+      width: 0.4rem;
+      height: 0.4rem;
+      background-color: red;
+      border-radius: 50%;
+      box-sizing: content-box;
+      border: 3px solid var(--background-500);
+      display: none;
+    }
+
+    .active {
+      display: initial;
+    }
+  }
+
+  &__theme {
+    position: relative;
+    cursor: pointer;
+    fill: var(--textLight-300);
+
+    &:hover svg,
+    &:active svg {
+      fill: var(--primary-100);
+    }
+  }
+
+  .active {
+    color: var(--primary-100);
+  }
 }

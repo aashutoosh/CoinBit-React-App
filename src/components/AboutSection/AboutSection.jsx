@@ -1,6 +1,6 @@
-import "./aboutSection.scss";
+import './aboutSection.scss';
 
-import React from "react";
+import React from 'react';
 
 function Heading() {
   return (
@@ -17,7 +17,7 @@ function Github() {
   return (
     <div className="github">
       <i className="ri-github-fill github__icon" />
-      <a href="https://github.com/aashutoosh/CoinBit-React-App" target="_blank">
+      <a href="https://github.com/aashutoosh/CoinBit-React-App" target="_blank" rel="noreferrer">
         View this project on Github
       </a>
     </div>
@@ -46,14 +46,18 @@ function Technology() {
       <ul>
         <li>- HTML, CSS (SCSS), and React.</li>
         <li>
-          - Hosted on{" "}
-          <a href="https://developers.cloudflare.com/pages/" target="_blank">
+          - Hosted on{' '}
+          <a href="https://developers.cloudflare.com/pages/" target="_blank" rel="noreferrer">
             Cloudflare Pages.
           </a>
         </li>
         <li>
-          -{" "}
-          <a href="https://binance-docs.github.io/apidocs/spot/en/#websocket-market-streams" target="_blank">
+          -{' '}
+          <a
+            href="https://binance-docs.github.io/apidocs/spot/en/#websocket-market-streams"
+            target="_blank"
+            rel="noreferrer"
+          >
             Binance WebSocket API.
           </a>
         </li>
@@ -69,16 +73,20 @@ function Disclaimer() {
       <h3>💡 Disclaimer:</h3>
       <ul>
         <li>- This app does not store any user data on the server.</li>
-        <li>- It uses the browser's local storage to store user preferences and settings.</li>
+        <li>- It uses the browser&apos;s local storage to store user preferences and settings.</li>
         <li>
-          - This app is intended for demonstration purposes only and should not be used for actual trading. We are not
-          liable for any losses incurred through the use of this app.
+          - This app is intended for demonstration purposes only and should not be used for actual
+          trading. We are not liable for any losses incurred through the use of this app.
         </li>
         <li>
-          - If you encounter any 🐛 bugs or issues, please report them on our{" "}
-          <a href="https://github.com/aashutoosh/CoinBit-App/issues" target="_blank">
+          - If you encounter any 🐛 bugs or issues, please report them on our{' '}
+          <a
+            href="https://github.com/aashutoosh/CoinBit-App/issues"
+            target="_blank"
+            rel="noreferrer"
+          >
             GitHub Issues
-          </a>{" "}
+          </a>{' '}
           page.
         </li>
       </ul>
@@ -88,7 +96,10 @@ function Disclaimer() {
 
 function AboutSection({ activeSection }) {
   return (
-    <section className={`about rightside ${activeSection === "about" ? "showsection" : ""}`} id="about">
+    <section
+      className={`about rightside ${activeSection === 'about' ? 'showsection' : ''}`}
+      id="about"
+    >
       <Heading />
       <div className="rightside__container">
         <Github />
