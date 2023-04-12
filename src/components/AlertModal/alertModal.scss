@@ -170,8 +170,8 @@
         outline: none;
       }
 
-      &:valid~.label,
-      &:focus~.label {
+      &:valid ~ .label,
+      &:focus ~ .label {
         font-size: 0.8rem;
         top: -0.5rem;
         left: -0.5rem;

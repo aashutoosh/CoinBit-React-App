@@ -141,18 +141,23 @@ export default function Layout() {
     setShowNotificationWindow((prev) => !prev);
   };
 
+  const hideNotificationWindow = () => {
+    setShowNotificationWindow((prev) => {
+      if (prev) {
+        return !prev;
+      }
+      return prev;
+    });
+  };
+
   useEffect(() => {
     const closeNotificationWindow = (event) => {
-      if (event.key === 'Escape' && showNotificationWindow) {
-        toggleNotificationWindow();
+      if (event.key === 'Escape') {
+        hideNotificationWindow();
       }
     };
 
-    if (showNotificationWindow) {
-      document.addEventListener('keydown', closeNotificationWindow);
-    } else {
-      document.removeEventListener('keydown', closeNotificationWindow);
-    }
+    document.addEventListener('keydown', closeNotificationWindow);
   }, []);
 
   return (

@@ -70,13 +70,25 @@
       transition: all 0.2s ease;
       cursor: default;
 
-      &:hover {
+      &:hover,
+      &:focus-within {
         background-color: var(--background-500);
         border-radius: 0.5rem;
       }
 
+      &:focus-within {
+        outline-offset: -4px;
+        transition: none;
+      }
+
       &:hover .notification__button--close {
         opacity: 1;
+      }
+
+      &:focus-within .notification__button--close {
+        opacity: 1;
+        transition: none;
+        outline-offset: 0px;
       }
 
       &__time {
@@ -127,8 +139,6 @@
         font-size: 1.1rem;
         cursor: pointer;
         transition: all 0.2s;
-        padding-left: 0.5rem;
-        padding-bottom: 0.5rem;
         color: var(--textLight-100);
         opacity: 0;
 
