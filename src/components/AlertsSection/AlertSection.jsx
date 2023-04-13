@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { SecondaryNotificationsContext } from '../../context/secondaryNotificationsContext';
 import { WebSocketContext } from '../../context/websocketContext';
 import './alertSection.scss';
+import { PrimaryNotificationsContext } from '../../context/primaryNotificationsContext';
 
 function Heading({ tabChange, createAlert }) {
   const pendingTab = useRef(null);
@@ -146,14 +147,29 @@ function AlertRow({ alert, pendingAlertsType, actionHandler, tableData }) {
   );
 }
 
-function Table({ alerts, alertsType, dispatchAlerts, createAlert, websocketActions }) {
+function Table({ allAlerts, alertsType, dispatchAlerts, createAlert, websocketActions }) {
   const secondaryNotification = useContext(SecondaryNotificationsContext);
+  const primaryNotification = useContext(PrimaryNotificationsContext);
   const pendingAlertsType = alertsType === 'pending';
+  const alerts = pendingAlertsType ? allAlerts.pendingAlerts : allAlerts.triggeredAlerts;
   const [tableData, setTableData] = useState({});
   const wsData = useContext(WebSocketContext);
 
   const alertsMemo = useMemo(() => alerts, [alerts]);
   const alertsTypeMemo = useMemo(() => alertsType, [alertsType]);
+
+  const removeSymbolData = (alert) => {
+    // If pending type then only can unsubscribe after alert deleted
+    if (pendingAlertsType) {
+      websocketActions.wsUnsubscribe(alert.symbol, 'pendingAlerts');
+
+      if (alertsMemo.filter((a) => a.symbol === alert.symbol).length === 1) {
+        const updatedData = { ...tableData };
+        delete updatedData[alert.symbol];
+        setTableData(updatedData);
+      }
+    }
+  };
 
   const actionHandler = (type, alert) => {
     if (type === 'edit') {
@@ -169,16 +185,7 @@ function Table({ alerts, alertsType, dispatchAlerts, createAlert, websocketActio
         secondaryNotification,
       });
 
-      // If pending type then only can unsubscribe after alert deleted
-      if (pendingAlertsType) {
-        websocketActions.wsUnsubscribe(alert.symbol, 'pendingAlerts');
-
-        if (alertsMemo.filter((a) => a.symbol === alert.symbol).length === 1) {
-          const updatedData = { ...tableData };
-          delete updatedData[alert.symbol];
-          setTableData(updatedData);
-        }
-      }
+      removeSymbolData(alert);
     }
   };
 
@@ -202,18 +209,78 @@ function Table({ alerts, alertsType, dispatchAlerts, createAlert, websocketActio
         data: { s: symbol, c: currentPrice },
       } = wsData;
       const prevData = tableData[symbol];
+
       let priceColor = '';
       if (prevData && prevData.price) {
         priceColor = currentPrice > prevData.price ? 'green' : 'red';
       }
+
       const newSymbolData = {
         price: Number(currentPrice),
         priceColor,
       };
+
       setTableData((prevTableData) => ({ ...prevTableData, [symbol]: newSymbolData }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wsData, alertsTypeMemo]);
+
+  useEffect(() => {
+    function conditionMatched(alert) {
+      dispatchAlerts({
+        type: 'TRIGGER_ALERT',
+        isPending: pendingAlertsType,
+        payload: alert,
+        primaryNotification,
+      });
+
+      removeSymbolData(alert);
+    }
+
+    if (wsData) {
+      const {
+        data: { s: symbol, c: currentPrice },
+      } = wsData;
+
+      const pendingAlerts = allAlerts.pendingAlerts.filter((alert) => alert.symbol === symbol);
+
+      pendingAlerts.forEach((alert) => {
+        const currentPriceNumber = Number(currentPrice);
+        const alertPriceNumber = Number(alert.price);
+        const { condition } = alert;
+        switch (condition) {
+          case '>=':
+            if (currentPriceNumber >= alertPriceNumber) {
+              conditionMatched(alert);
+            }
+            break;
+          case '<=':
+            if (currentPriceNumber <= alertPriceNumber) {
+              conditionMatched(alert);
+            }
+            break;
+          case '>':
+            if (currentPriceNumber > alertPriceNumber) {
+              conditionMatched(alert);
+            }
+            break;
+          case '<':
+            if (currentPriceNumber < alertPriceNumber) {
+              conditionMatched(alert);
+            }
+            break;
+          case '==':
+            if (currentPriceNumber === alertPriceNumber) {
+              conditionMatched(alert);
+            }
+            break;
+          default:
+            break;
+        }
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wsData]);
 
   return (
     <div className="table__container">
@@ -262,6 +329,7 @@ export default function AlertSection({
 }) {
   const [alertsType, setAlertsType] = useState('pending');
   const alerts = alertsType === 'pending' ? allAlerts.pendingAlerts : allAlerts.triggeredAlerts;
+
   return (
     <section
       className={`alerts rightside ${activeSection === 'alerts' ? 'showsection' : ''}`}
@@ -270,7 +338,7 @@ export default function AlertSection({
       <Heading tabChange={(tabType) => setAlertsType(tabType)} createAlert={createAlert} />
       {alerts.length > 0 && (
         <Table
-          alerts={alerts}
+          allAlerts={allAlerts}
           alertsType={alertsType}
           createAlert={createAlert}
           dispatchAlerts={dispatchAlerts}

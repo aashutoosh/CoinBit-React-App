@@ -16,15 +16,24 @@ export default function alertsReducer(currentAlerts, action) {
     }
 
     case 'TRIGGER_ALERT': {
-      const alertObject = pendingAlerts.filter((alert) => alert.createdon === action.alertKey)[0];
+      const alertObject = pendingAlerts.filter(
+        (alert) => alert.createdon === action.payload.createdon,
+      )[0];
 
       const filteredPendingAlerts = pendingAlerts.filter(
-        (alert) => alert.createdon !== action.alertKey,
+        (alert) => alert.createdon !== action.payload.createdon,
       );
       updateLocalStorage('pendingAlerts', filteredPendingAlerts);
 
       updatedTriggeredAlerts = [alertObject, ...triggeredAlerts];
       updateLocalStorage('triggeredAlerts', updatedTriggeredAlerts);
+
+      action.primaryNotification({
+        title: action.payload.title,
+        description: action.payload.description,
+        condition: `${action.payload.symbol} ${action.payload.condition} ${action.payload.price}`,
+        icon: 'ri-notification-4-line',
+      });
 
       return {
         pendingAlerts: filteredPendingAlerts,
