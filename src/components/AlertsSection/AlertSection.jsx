@@ -193,7 +193,8 @@ function Table({ alerts, alertsType, dispatchAlerts, createAlert, websocketActio
       });
       setTableData(initialData);
     }
-  }, [alertsMemo, alertsTypeMemo]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (wsData && alertsTypeMemo === 'pending') {
