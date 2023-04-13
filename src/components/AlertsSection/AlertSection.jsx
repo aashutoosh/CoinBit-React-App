@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { SecondaryNotificationsContext } from '../../context/secondaryNotificationsContext';
 import { WebSocketContext } from '../../context/websocketContext';
 import './alertSection.scss';
@@ -152,6 +152,9 @@ function Table({ alerts, alertsType, dispatchAlerts, createAlert, websocketActio
   const [tableData, setTableData] = useState({});
   const wsData = useContext(WebSocketContext);
 
+  const alertsMemo = useMemo(() => alerts, [alerts]);
+  const alertsTypeMemo = useMemo(() => alertsType, [alertsType]);
+
   const actionHandler = (type, alert) => {
     if (type === 'edit') {
       createAlert({
@@ -170,7 +173,7 @@ function Table({ alerts, alertsType, dispatchAlerts, createAlert, websocketActio
       if (pendingAlertsType) {
         websocketActions.wsUnsubscribe(alert.symbol, 'pendingAlerts');
 
-        if (alerts.filter((a) => a.symbol === alert.symbol).length === 1) {
+        if (alertsMemo.filter((a) => a.symbol === alert.symbol).length === 1) {
           const updatedData = { ...tableData };
           delete updatedData[alert.symbol];
           setTableData(updatedData);
@@ -180,9 +183,9 @@ function Table({ alerts, alertsType, dispatchAlerts, createAlert, websocketActio
   };
 
   useEffect(() => {
-    if (alertsType === 'pending') {
+    if (alertsTypeMemo === 'pending') {
       const initialData = {};
-      alerts.forEach((alert) => {
+      alertsMemo.forEach((alert) => {
         initialData[alert.symbol] = {
           price: 0.0,
           priceColor: '',
@@ -190,10 +193,10 @@ function Table({ alerts, alertsType, dispatchAlerts, createAlert, websocketActio
       });
       setTableData(initialData);
     }
-  }, []);
+  }, [alertsMemo, alertsTypeMemo]);
 
   useEffect(() => {
-    if (wsData && alertsType === 'pending') {
+    if (wsData && alertsTypeMemo === 'pending') {
       const {
         data: { s: symbol, c: currentPrice },
       } = wsData;
@@ -208,7 +211,8 @@ function Table({ alerts, alertsType, dispatchAlerts, createAlert, websocketActio
       };
       setTableData((prevTableData) => ({ ...prevTableData, [symbol]: newSymbolData }));
     }
-  }, [wsData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wsData, alertsTypeMemo]);
 
   return (
     <div className="table__container">
@@ -223,7 +227,7 @@ function Table({ alerts, alertsType, dispatchAlerts, createAlert, websocketActio
           </tr>
         </thead>
         <tbody className="alerts__table--tbody">
-          {alerts.map((alert) => (
+          {alertsMemo.map((alert) => (
             <AlertRow
               key={alert.createdon}
               alert={alert}

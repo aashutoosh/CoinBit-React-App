@@ -120,6 +120,7 @@ export default function Layout() {
     if (!ws.current && uniqueSymbols.length > 0) {
       initializeWebsocket();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const createAlertHandler = (alertObject) => {

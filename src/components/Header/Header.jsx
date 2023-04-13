@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { getFromLocalStorage, addToLocalStorage } from '../../utils/localStorageUtils';
 import './header.scss';
 
@@ -177,6 +177,8 @@ function Notification({ primaryNotification, onBellClick, showNotificationWindow
   const notificationBellRef = useRef(null);
   const notificationLightRef = useRef(null);
 
+  const onBellClickMemo = useCallback(onBellClick, [onBellClick]);
+
   const addNotificationLight = () => {
     notificationLightRef.current.classList.add('active');
   };
@@ -186,7 +188,7 @@ function Notification({ primaryNotification, onBellClick, showNotificationWindow
   };
 
   const handleBellClick = () => {
-    onBellClick();
+    onBellClickMemo();
     removeNotificationLight();
   };
 
@@ -195,7 +197,7 @@ function Notification({ primaryNotification, onBellClick, showNotificationWindow
       if (notificationBellRef.current.contains(event.target)) {
         event.stopPropagation();
       } else if (showNotificationWindow) {
-        onBellClick();
+        onBellClickMemo();
       }
     }
 
@@ -204,7 +206,7 @@ function Notification({ primaryNotification, onBellClick, showNotificationWindow
     return () => {
       document.removeEventListener('click', handleOutsideClick);
     };
-  }, [showNotificationWindow]);
+  }, [showNotificationWindow, onBellClickMemo]);
 
   useEffect(() => {
     if (primaryNotification?.key) {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useContext } from 'react';
+import React, { useEffect, useState, useRef, useContext, useMemo } from 'react';
 import { fetchAllSymbols } from '../../binance';
 import { WebSocketContext } from '../../context/websocketContext';
 import {
@@ -99,6 +99,7 @@ function WatchlistItems({ watchlistSymbols, itemsAction, watchlistData }) {
 export default function Watchlist({ createAlert, activeSection, websocketActions }) {
   const [queryString, setQueryString] = useState('');
   const [exchangeSymbols, setExchangeSymbols] = useState([]);
+  const exchangeSymbolsMemo = useMemo(() => exchangeSymbols, [exchangeSymbols]);
   const [watchlistSymbols, setWatchlistSymbols] = useState(getFromLocalStorage('watchlist') || []);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [watchlistData, setWatchlistData] = useState({});
@@ -119,6 +120,7 @@ export default function Watchlist({ createAlert, activeSection, websocketActions
       };
     });
     setWatchlistData(initialData);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -140,6 +142,7 @@ export default function Watchlist({ createAlert, activeSection, websocketActions
       };
       setWatchlistData({ ...watchlistData, [symbol]: newSymbolData });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wsData]);
 
   const searchInputHandler = (event) => {
@@ -182,10 +185,10 @@ export default function Watchlist({ createAlert, activeSection, websocketActions
   };
 
   useEffect(() => {
-    if (exchangeSymbols.length === 0) {
+    if (exchangeSymbolsMemo.length === 0) {
       fetchAllSymbols().then((fetchedSymbols) => setExchangeSymbols(fetchedSymbols));
     }
-  }, [queryString]);
+  }, [queryString, exchangeSymbolsMemo]);
 
   useEffect(() => {
     const handleMouseDown = (event) => {
@@ -224,7 +227,7 @@ export default function Watchlist({ createAlert, activeSection, websocketActions
       {showSearchResults && (
         <SearchResults
           searchQuery={queryString}
-          allSymbols={exchangeSymbols}
+          allSymbols={exchangeSymbolsMemo}
           watchlistSymbols={watchlistSymbols}
           searchResultRef={searchResultRef}
           onAddButtonClick={addToWatchlistHandler}

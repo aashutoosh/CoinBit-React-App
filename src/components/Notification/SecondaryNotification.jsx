@@ -1,10 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { SECONDARY_NOTIFICATION_SEC } from '../../config';
 
 import './secondaryNotification.scss';
 
 function SecondaryNotification({ notification }) {
   const { message } = notification;
+  const messageMemo = useMemo(() => message, [message]);
   const icon = notification.icon ? notification.icon : 'ri-notification-4-line';
   const [isVisible, setIsVisible] = useState(false);
   const notfElement = useRef(null);
@@ -24,23 +25,23 @@ function SecondaryNotification({ notification }) {
     }
 
     return () => clearTimeout(timeoutId);
-  }, [isVisible, message]);
+  }, [isVisible, messageMemo]);
 
   useEffect(() => {
-    if (message) {
+    if (messageMemo) {
       setIsVisible(true);
     }
 
     return () => {
       setIsVisible(false);
     };
-  }, [notification]);
+  }, [notification, messageMemo]);
 
   return (
     isVisible && (
       <div className="secondary__notification show" ref={notfElement}>
         <i className={`icon ${icon}`} />
-        <span className="message">{message}</span>
+        <span className="message">{messageMemo}</span>
       </div>
     )
   );

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { SecondaryNotificationsContext } from '../../context/secondaryNotificationsContext';
 import { WebSocketContext } from '../../context/websocketContext';
 import { getUniqueSymbols } from '../../utils/helper';
@@ -37,14 +37,16 @@ function AlertModal({ modalObject, dispatchAlerts }) {
   const secondaryNotification = useContext(SecondaryNotificationsContext);
   const wsData = useContext(WebSocketContext);
   const updateAlert = modalObject.type === 'update';
-  const initialFormData = {
-    title: updateAlert ? modalObject.payload.title : '',
-    description: updateAlert ? modalObject.payload.description : '',
-    symbol: updateAlert ? modalObject.payload.symbol : modalObject.symbol,
-    condition: updateAlert ? modalObject.payload.condition : '>=',
-    price: updateAlert ? modalObject.payload.price : '',
-  };
-
+  const initialFormData = useMemo(
+    () => ({
+      title: updateAlert ? modalObject.payload.title : '',
+      description: updateAlert ? modalObject.payload.description : '',
+      symbol: updateAlert ? modalObject.payload.symbol : modalObject.symbol,
+      condition: updateAlert ? modalObject.payload.condition : '>=',
+      price: updateAlert ? modalObject.payload.price : '',
+    }),
+    [updateAlert, modalObject],
+  );
   const [isVisible, setIsVisible] = useState(false);
   const [formData, setFormData] = useState(initialFormData);
   const [priceData, setPriceData] = useState({});
@@ -80,14 +82,14 @@ function AlertModal({ modalObject, dispatchAlerts }) {
     }
   }, [wsData]);
 
-  const showModal = () => {
+  const showModal = useCallback(() => {
     setIsVisible(true);
     setFormData(initialFormData);
     setTimeout(() => {
       modalRef.current.classList.remove('show');
       modalRef.current.classList.add('show');
     }, 100);
-  };
+  }, [setIsVisible, setFormData, modalRef, initialFormData]);
 
   const hideModal = () => {
     modalRef.current.classList.remove('show');
@@ -98,7 +100,7 @@ function AlertModal({ modalObject, dispatchAlerts }) {
 
   useEffect(() => {
     if (modalObject.type) showModal();
-  }, [modalObject]);
+  }, [modalObject, showModal]);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
