@@ -4,34 +4,8 @@ import { WebSocketContext } from '../../context/websocketContext';
 import { getUniqueSymbols } from '../../utils/helper';
 import './alertModal.scss';
 
-function AllSymbolsOptions() {
-  const allSymbols = getUniqueSymbols();
-  const symbolsOption = allSymbols.map((symbol) => (
-    <option value={symbol} key={symbol} tabIndex={0}>
-      {symbol}
-    </option>
-  ));
-
-  return symbolsOption;
-}
-
-function CloseButton({ closeHandler }) {
-  const closeButtonRef = useRef(null);
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter') closeHandler();
-  };
-
-  return (
-    <i
-      ref={closeButtonRef}
-      className="alertmodal__close ri-close-line"
-      onClick={closeHandler}
-      onKeyDown={handleKeyDown}
-      role="button"
-      tabIndex={0}
-    />
-  );
-}
+import AllSymbolsOptions from './AllSymbolsOptions';
+import CloseButton from './CloseButton';
 
 function AlertModal({ modalObject, dispatchAlerts }) {
   const secondaryNotification = useContext(SecondaryNotificationsContext);

@@ -4,6 +4,7 @@ import {
   getFromLocalStorage,
   updateLocalStorage,
 } from '../../utils/localStorageUtils';
+
 import './notificationWindow.scss';
 
 function NotificationItem({ notf, showWindow, removeNotification }) {
