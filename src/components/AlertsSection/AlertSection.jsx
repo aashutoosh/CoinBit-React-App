@@ -232,6 +232,7 @@ function Table({ allAlerts, alertsType, dispatchAlerts, createAlert, websocketAc
         isPending: pendingAlertsType,
         payload: alert,
         primaryNotification,
+        secondaryNotification,
       });
 
       removeSymbolData(alert);

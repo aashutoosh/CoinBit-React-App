@@ -1,3 +1,4 @@
+import { sendDiscordAlert } from '../utils/discord';
 import { updateLocalStorage } from '../utils/localStorageUtils';
 
 export default function alertsReducer(currentAlerts, action) {
@@ -34,6 +35,8 @@ export default function alertsReducer(currentAlerts, action) {
         condition: `${action.payload.symbol} ${action.payload.condition} ${action.payload.price}`,
         icon: 'ri-notification-4-line',
       });
+
+      sendDiscordAlert(action.payload, action.secondaryNotification);
 
       return {
         pendingAlerts: filteredPendingAlerts,
