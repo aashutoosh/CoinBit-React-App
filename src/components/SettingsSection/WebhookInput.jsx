@@ -11,7 +11,7 @@ export default function WebhookInput({ discordChecked }) {
     const url = webhookUrl.trim();
 
     const isValidWebhookUrl = url.startsWith(VALID_WEBHOOK_STARTSWITH);
-    if (!isValidWebhookUrl && !(url === '')) {
+    if (!isValidWebhookUrl) {
       secondaryNotification('Please enter a valid Discord webhook URL.', 'ri-error-warning-line');
       return;
     }
@@ -27,8 +27,16 @@ export default function WebhookInput({ discordChecked }) {
   return (
     <div className={`webhook ${discordChecked ? 'show' : ''}`}>
       <label className="webhook__label" htmlFor="webhookURL">
-        <span>Discord Webhook URL</span> <i className="ri-question-line" />
-        <div className="tooltip">
+        <span>Discord Webhook URL</span>{' '}
+        <i
+          className="ri-question-line"
+          // eslint-disable-next-line
+          tabIndex={discordChecked ? 0 : -1}
+          role="tooltip"
+          aria-describedby="tooltip"
+          aria-label="Tooltip"
+        />
+        <div className="tooltip" id="tooltip">
           <span>How to get Discord Webhook Url ?</span>
           <ul>
             <li>1. Open channel settings.</li>
@@ -46,9 +54,15 @@ export default function WebhookInput({ discordChecked }) {
           id="webhookURL"
           value={webhookUrl}
           onChange={onInputChange}
+          tabIndex={discordChecked ? 0 : -1}
         />
-        <i className="ri-link-m" />
-        <button className="save__url" type="button" onClick={updateWebhookUrl}>
+        <i className="ri-link-m webhook__input--icon" />
+        <button
+          className="save__url"
+          type="button"
+          onClick={updateWebhookUrl}
+          tabIndex={discordChecked ? 0 : -1}
+        >
           Save
         </button>
       </div>

@@ -27,6 +27,14 @@
     background-color: var(--textDark-900);
     transition: background-color 0.3s;
 
+    &:focus {
+      outline: 2px solid var(--primary-100);
+    }
+
+    &:focus:not(:focus-visible) {
+      outline: none;
+    }
+
     &:before {
       content: '';
       position: absolute;
@@ -84,13 +92,17 @@
       opacity: 1;
       font-size: 1.2rem;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: color 0.2s;
 
       &:hover {
         color: var(--primary-100);
       }
 
-      &:hover ~ .tooltip {
+      &:hover~.tooltip {
+        opacity: 1;
+      }
+
+      &:focus~.tooltip {
         opacity: 1;
       }
     }
@@ -145,9 +157,13 @@
       &:hover {
         background-color: var(--primary-300);
       }
+
+      &:focus {
+        transition: none;
+      }
     }
 
-    i {
+    &--icon {
       position: absolute;
       left: 0;
       top: 50%;
@@ -166,7 +182,11 @@
     height: 2rem;
     font-size: 0.9rem;
     padding-left: 1.5rem;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 2px solid var(--border);
+
+    &:focus {
+      border-bottom: 2px solid var(--primary-100);
+    }
 
     @media screen and (max-width: 991px) {
       width: 12rem;
