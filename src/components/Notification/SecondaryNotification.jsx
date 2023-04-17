@@ -39,7 +39,12 @@ function SecondaryNotification({ notification }) {
 
   return (
     isVisible && (
-      <div className="secondary__notification show" ref={notfElement}>
+      <div
+        className="secondary__notification show"
+        ref={notfElement}
+        aria-live="assertive"
+        aria-atomic="true"
+      >
         <i className={`icon ${icon}`} />
         <span className="message">{messageMemo}</span>
       </div>

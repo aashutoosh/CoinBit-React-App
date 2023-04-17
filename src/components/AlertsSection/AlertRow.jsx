@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { ariaSymbolName } from '../../utils/helper';
 
 export default function AlertRow({ alert, pendingAlertsType, actionHandler, tableData }) {
   const rowRef = useRef(null);
@@ -37,7 +38,7 @@ export default function AlertRow({ alert, pendingAlertsType, actionHandler, tabl
               className="control__buttons--edit ri-pencil-line"
               onClick={editButtonHandler}
               onKeyDown={editKeyDown}
-              aria-label="Edit"
+              aria-label="Edit alert"
             />
           )}
           <i
@@ -47,12 +48,14 @@ export default function AlertRow({ alert, pendingAlertsType, actionHandler, tabl
             className="control__buttons--delete ri-close-line"
             onClick={deleteButtonHandler}
             onKeyDown={deleteKeyDown}
-            aria-label="Delete"
+            aria-label="Delete alert"
           />
         </div>
       </td>
       <td>
-        <span className="symbol">{alert.symbol}</span>
+        <span className="symbol" aria-label={ariaSymbolName(alert.symbol)}>
+          {alert.symbol}
+        </span>
         {pendingAlertsType && (
           <span className={`ltp ${tableData[alert.symbol]?.priceColor}`}>
             {tableData[alert.symbol]?.price}

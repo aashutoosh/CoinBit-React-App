@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 
 function NavLink({ name, icon, activeLink, handleClick, handleKeyDown }) {
+  const isLinkActive = activeLink === name;
   return (
     <a
       href={`#${name}`}
-      className={`nav__link nav__link--${name} ${activeLink === name ? 'active' : ''}`}
+      className={`nav__link nav__link--${name} ${isLinkActive ? 'active' : ''}`}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
+      aria-label={isLinkActive ? `${name} page active` : `Go to ${name} page`}
     >
       <div>
-        <span>{name}</span>
+        <span aria-label={isLinkActive ? `${name} page active` : `Go to ${name} page`}>{name}</span>
         <i className={icon} />
       </div>
     </a>

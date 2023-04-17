@@ -49,13 +49,13 @@ export default function Notification({ primaryNotification, onBellClick, showNot
   };
 
   return (
-    <div
+    <button
       className="nav__notification"
       onClick={handleBellClick}
       ref={notificationBellRef}
       onKeyDown={keyDownHandler}
-      role="button"
-      tabIndex={0}
+      type="button"
+      aria-label="Show all alert notifications"
     >
       <svg
         className=""
@@ -68,6 +68,6 @@ export default function Notification({ primaryNotification, onBellClick, showNot
         <path d="M20 17h2v2H2v-2h2v-7a8 8 0 1 1 16 0v7zm-2 0v-7a6 6 0 1 0-12 0v7h12zm-9 4h6v2H9v-2z" />
       </svg>
       <span className="nav__notification--light show" ref={notificationLightRef} />
-    </div>
+    </button>
   );
 }

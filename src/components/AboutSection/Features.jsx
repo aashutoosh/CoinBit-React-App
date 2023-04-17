@@ -3,7 +3,7 @@ import React from 'react';
 export default function Features() {
   return (
     <div className="features">
-      <h3>✅ Features:</h3>
+      <h3 aria-label="Features">✅ Features:</h3>
       <ul>
         <li>- Real-time cryptocurrency data updates from Binance websocket API.</li>
         <li>- Custom watchlist to monitor favorite cryptocurrencies.</li>

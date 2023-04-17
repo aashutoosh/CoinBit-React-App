@@ -3,7 +3,7 @@ import React from 'react';
 export default function Technology() {
   return (
     <div className="technology">
-      <h3>⚡️ Technologies used:</h3>
+      <h3 aria-label="Technologies used">⚡️ Technologies used:</h3>
       <ul>
         <li>- HTML, CSS (SCSS), and React.</li>
         <li>

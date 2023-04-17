@@ -6,8 +6,11 @@ import {
 } from '../../utils/localStorageUtils';
 
 import './notificationWindow.scss';
+import { ariaSymbolName } from '../../utils/helper';
 
 function NotificationItem({ notf, showWindow, removeNotification }) {
+  let symbolName = notf.condition.split(' ')[0];
+  symbolName = ariaSymbolName(symbolName);
   return (
     <li className="notification">
       <span className="notification__time">{notf.time}</span>
@@ -20,6 +23,7 @@ function NotificationItem({ notf, showWindow, removeNotification }) {
         className="notification__button--close ri-close-line"
         tabIndex={showWindow ? 0 : -1}
         role="button"
+        aria-label={`Delete ${symbolName} notification`}
         onClick={() => removeNotification(notf.key)}
         onKeyDown={(event) => {
           if (event.key === 'Enter' || event.key === ' ') {
@@ -89,6 +93,7 @@ export default function NotificationWindow({ primaryNotification, showWindow }) 
           role="button"
           tabIndex={showWindow ? 0 : -1}
           onClick={clearWindow}
+          aria-label="Clear all alert notifications."
           onKeyDown={(event) => {
             if (event.key === 'Enter' || event.key === ' ') {
               clearWindow();

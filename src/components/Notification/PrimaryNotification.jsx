@@ -30,7 +30,11 @@ function NotificationItem({ title, description, condition, icon, onClose }) {
   };
 
   return (
-    <div className={`notification ${show ? 'show' : 'hide'}`}>
+    <div
+      className={`notification ${show ? 'show' : 'hide'}`}
+      aria-live="assertive"
+      aria-atomic="true"
+    >
       <i className={`notification__icon ${icon}`} />
       <div className="notification__text">
         <p className="notification__text--condition">{condition}</p>
@@ -43,6 +47,7 @@ function NotificationItem({ title, description, condition, icon, onClose }) {
         onKeyDown={closeKeyDownHandler}
         role="button"
         tabIndex={0}
+        aria-label="Close"
       />
     </div>
   );

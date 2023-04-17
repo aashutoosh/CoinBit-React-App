@@ -3,7 +3,7 @@ import React from 'react';
 export default function Disclaimer() {
   return (
     <div className="disclaimer">
-      <h3>💡 Disclaimer:</h3>
+      <h3 aria-label="Disclaimer">💡 Disclaimer:</h3>
       <ul>
         <li>- This app does not store any user data on the server.</li>
         <li>- It uses the browser&apos;s local storage to store user preferences and settings.</li>

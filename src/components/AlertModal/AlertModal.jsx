@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { SecondaryNotificationsContext } from '../../context/secondaryNotificationsContext';
 import { WebSocketContext } from '../../context/websocketContext';
-import { getUniqueSymbols } from '../../utils/helper';
+import { ariaSymbolName, getUniqueSymbols } from '../../utils/helper';
 import './alertModal.scss';
 
 import AllSymbolsOptions from './AllSymbolsOptions';
@@ -118,12 +118,23 @@ function AlertModal({ modalObject, dispatchAlerts }) {
 
   return (
     isVisible && (
-      <section className="alertmodal" id="alertmodal" ref={modalRef}>
+      <section
+        className="alertmodal"
+        id="alertmodal"
+        ref={modalRef}
+        aria-label="Create alert modal"
+      >
         <h2 className="alertmodal__title">{`${
           modalObject.type === 'create' ? 'Create' : 'Update'
         } Alert`}</h2>
         <CloseButton closeHandler={hideModal} />
-        <form className="alertmodal__form" data-key="" autoComplete="off" onSubmit={handleSubmit}>
+        <form
+          className="alertmodal__form"
+          data-key=""
+          autoComplete="off"
+          onSubmit={handleSubmit}
+          aria-label="Create alert form"
+        >
           <div className="alertmodal__form--fields">
             <input
               id="title"
@@ -160,6 +171,9 @@ function AlertModal({ modalObject, dispatchAlerts }) {
                 onChange={handleInputChange}
                 value={formData.symbol || getUniqueSymbols()?.[0]}
                 id="modalSymbolSelect"
+                aria-label={`Selected ${ariaSymbolName(
+                  formData.symbol || getUniqueSymbols()?.[0],
+                )}`}
               >
                 <AllSymbolsOptions />
               </select>

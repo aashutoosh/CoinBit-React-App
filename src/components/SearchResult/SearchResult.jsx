@@ -1,5 +1,6 @@
 import React from 'react';
 import './searchResult.scss';
+import { ariaSymbolName } from '../../utils/helper';
 
 export default function SearchResults({
   searchQuery,
@@ -32,14 +33,19 @@ export default function SearchResults({
     const iconClass = isWatchlisted
       ? 'button__item button__item--green ri-check-line active'
       : 'button__item button__item--green ri-add-line';
+    const ariaSymbol = ariaSymbolName(symbol);
     return (
       <li key={symbol} className="searchresults__item" tabIndex={isWatchlisted ? -1 : 0}>
-        <span className="coinname">{symbol}</span>
+        <span className="coinname" aria-label={ariaSymbol}>
+          {symbol}
+        </span>
         <i
           className={iconClass}
           tabIndex={isWatchlisted ? -1 : 0}
           role="button"
-          aria-label={`Add ${symbol} to watchlist`}
+          aria-label={
+            isWatchlisted ? `${ariaSymbol} is added to watchlist` : `Add ${ariaSymbol} to watchlist`
+          }
         />
       </li>
     );

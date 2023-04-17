@@ -3,7 +3,7 @@ import React, { useRef } from 'react';
 export default function CloseButton({ closeHandler }) {
   const closeButtonRef = useRef(null);
   const handleKeyDown = (event) => {
-    if (event.key === 'Enter') closeHandler();
+    if (event.key === 'Enter' || event.key === ' ') closeHandler();
   };
 
   return (
@@ -14,6 +14,7 @@ export default function CloseButton({ closeHandler }) {
       onKeyDown={handleKeyDown}
       role="button"
       tabIndex={0}
+      aria-label="Close"
     />
   );
 }

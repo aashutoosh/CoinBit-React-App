@@ -26,3 +26,9 @@ export function getAllAlerts() {
     triggeredAlerts: getFromLocalStorage('triggeredAlerts') || [],
   };
 }
+
+export function ariaSymbolName(symbol) {
+  // Replace all characters in the symbol with spaces
+  // to create a string that screen readers will pronounce each letter separately like BTCUSDT to B T C U S D T
+  return symbol.split('').join(' ');
+}

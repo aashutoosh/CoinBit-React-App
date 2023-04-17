@@ -120,10 +120,11 @@ header {
   &__theme {
     position: relative;
     width: 16px;
-    // padding: 1rem;
+    background: transparent;
 
     .icon {
       position: absolute;
+      top: 0;
       left: 0;
       pointer-events: none;
       transition: transform 0.3s ease;
@@ -158,6 +159,7 @@ header {
   &__notification {
     position: relative;
     fill: var(--textLight-300);
+    background: transparent;
     cursor: pointer;
 
     // Animate just svg when hover or when tapped on phone

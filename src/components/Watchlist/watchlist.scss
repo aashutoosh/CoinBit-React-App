@@ -89,6 +89,10 @@
       &:focus {
         outline: none;
       }
+
+      &:focus .watchlist__search {
+        border-bottom: 1px solid red;
+      }
     }
   }
 

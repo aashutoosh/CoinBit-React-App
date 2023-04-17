@@ -1,12 +1,16 @@
 import React from 'react';
+import { ariaSymbolName } from '../../utils/helper';
 
 export default function WatchlistItems({ watchlistSymbols, itemsAction, watchlistData }) {
   const watchlistItems = watchlistSymbols.map((symbol) => {
     const symbolData = watchlistData[symbol];
+    const ariaSymbol = ariaSymbolName(symbol);
     return (
       // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
-      <li className="watchlist__item symbol " key={symbol} tabIndex={0} aria-label={symbol}>
-        <span className="symbol__name">{symbol}</span>
+      <li className="watchlist__item symbol " key={symbol} tabIndex={0} aria-label={ariaSymbol}>
+        <span className="symbol__name" aria-label={ariaSymbol}>
+          {symbol}
+        </span>
         <div className="symbol__price">
           <span className={`symbol__price--latest ${symbolData?.priceColor}`}>
             {symbolData?.price || '0.0'}
@@ -25,13 +29,13 @@ export default function WatchlistItems({ watchlistSymbols, itemsAction, watchlis
             className="createNewAlert button__item button__item--green ri-alarm-line"
             role="button"
             tabIndex={0}
-            aria-label={`Create alert for ${symbol}`}
+            aria-label={`Create alert for ${ariaSymbol}`}
           />
           <i
             className="delete button__item button__item--red ri-delete-bin-6-line"
             tabIndex={0}
             role="button"
-            aria-label={`Delete ${symbol} from watchlist`}
+            aria-label={`Delete ${ariaSymbol} from watchlist`}
           />
         </div>
       </li>

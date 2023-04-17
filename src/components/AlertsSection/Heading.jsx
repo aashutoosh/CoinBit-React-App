@@ -15,6 +15,16 @@ export default function Heading({ tabChange, createAlert }) {
       triggeredTab.current.classList.add('active');
       tabChange('triggered');
     }
+
+    // Update aria-label for active tab
+    pendingTab.current.setAttribute(
+      'aria-label',
+      isPendingType ? 'Pending alerts tab - Active' : 'Pending alerts tab',
+    );
+    triggeredTab.current.setAttribute(
+      'aria-label',
+      !isPendingType ? 'Triggered alerts tab - Active' : 'Triggered alerts tab',
+    );
   };
 
   const keyTabChangeHandler = (event) => {

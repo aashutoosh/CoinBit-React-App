@@ -24,6 +24,7 @@ export default function WatchlistSearchInput({ queryString, inputHandler, search
         placeholder="Search crypto pairs like btcusdt, ethbtc"
         onChange={inputHandler}
         value={queryString}
+        aria-label="Search"
       />
     </div>
   );

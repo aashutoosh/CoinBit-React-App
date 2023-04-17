@@ -16,8 +16,8 @@ function Header({
   showNotificationWindow,
 }) {
   return (
-    <header className="header" id="header">
-      <nav className="nav container">
+    <header className="header" id="header" aria-label="Header">
+      <nav className="nav container" aria-label="Header">
         <NavLogo />
         <NavLinks>
           <Links activeSection={activeSectionHandler} />

@@ -26,7 +26,7 @@ function SettingsSection({ activeSection }) {
       id="settings"
     >
       <Heading />
-      <div className="rightside__container">
+      <div className="rightside__container" aria-label="Settings form">
         <DiscordToggle discordChecked={discordChecked} onToggle={toggleDiscordCheckbox} />
         <WebhookInput discordChecked={discordChecked} />
       </div>

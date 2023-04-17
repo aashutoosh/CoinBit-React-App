@@ -98,11 +98,11 @@
         color: var(--primary-100);
       }
 
-      &:hover~.tooltip {
+      &:hover ~ .tooltip {
         opacity: 1;
       }
 
-      &:focus~.tooltip {
+      &:focus ~ .tooltip {
         opacity: 1;
       }
     }
