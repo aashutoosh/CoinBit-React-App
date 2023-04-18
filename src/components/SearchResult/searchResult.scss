@@ -30,7 +30,7 @@
       background-color: var(--background-300);
     }
 
-    &:focus {
+    &:focus-within {
       background-color: var(--background-300);
       outline-offset: -2px;
     }
@@ -40,7 +40,8 @@
     }
 
     .button__item {
-      display: none;
+      opacity: 0;
+      pointer-events: none;
 
       &:hover {
         color: #fff;
@@ -48,18 +49,21 @@
     }
 
     .active {
-      display: initial;
+      opacity: 1;
+      pointer-events: initial;
       border: 1px solid var(--green-300);
       background-color: var(--green-300);
       color: #fff;
     }
 
     &:hover .button__item {
-      display: initial;
+      opacity: 1;
+      pointer-events: initial;
     }
 
     &:focus-within .button__item {
-      display: initial;
+      opacity: 1;
+      pointer-events: initial;
     }
   }
 }

@@ -35,7 +35,7 @@ export default function SearchResults({
       : 'button__item button__item--green ri-add-line';
     const ariaSymbol = ariaSymbolName(symbol);
     return (
-      <li key={symbol} className="searchresults__item" tabIndex={isWatchlisted ? -1 : 0}>
+      <li key={symbol} className="searchresults__item">
         <span className="coinname" aria-label={ariaSymbol}>
           {symbol}
         </span>

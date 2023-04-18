@@ -65,7 +65,7 @@
     align-items: center;
     padding: 1rem;
     height: var(--header-height);
-    border-bottom: 1px solid var(--border);
+    border-bottom: 2px solid var(--border);
     z-index: inherit;
 
     span {
@@ -88,10 +88,7 @@
       &:active,
       &:focus {
         outline: none;
-      }
-
-      &:focus .watchlist__search {
-        border-bottom: 1px solid red;
+        border-bottom: 2px solid var(--primary-100);
       }
     }
   }
