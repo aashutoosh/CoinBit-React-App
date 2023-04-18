@@ -6,8 +6,7 @@ export default function WatchlistItems({ watchlistSymbols, itemsAction, watchlis
     const symbolData = watchlistData[symbol];
     const ariaSymbol = ariaSymbolName(symbol);
     return (
-      // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
-      <li className="watchlist__item symbol " key={symbol} tabIndex={0} aria-label={ariaSymbol}>
+      <li className="watchlist__item symbol " key={symbol} aria-label={ariaSymbol}>
         <span className="symbol__name" aria-label={ariaSymbol}>
           {symbol}
         </span>

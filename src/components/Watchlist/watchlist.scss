@@ -53,7 +53,8 @@
 
     &:hover .symbol__action,
     &:focus-within .symbol__action {
-      display: flex;
+      opacity: 1;
+      pointer-events: initial;
     }
   }
 
@@ -133,10 +134,12 @@
     }
 
     &__action {
+      opacity: 0;
+      pointer-events: none;
+      display: flex;
       position: absolute;
       background-color: inherit;
       right: 1rem;
-      display: none;
       justify-content: flex-end;
       align-items: center;
 
