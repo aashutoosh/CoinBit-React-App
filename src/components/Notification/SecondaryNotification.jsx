@@ -5,6 +5,7 @@ import './secondaryNotification.scss';
 
 function SecondaryNotification({ notification }) {
   const { message } = notification;
+  const { ariaMessage } = notification;
   const messageMemo = useMemo(() => message, [message]);
   const icon = notification.icon ? notification.icon : 'ri-notification-4-line';
   const [isVisible, setIsVisible] = useState(false);
@@ -37,16 +38,19 @@ function SecondaryNotification({ notification }) {
     };
   }, [notification, messageMemo]);
 
+  const messageSpan = ariaMessage ? (
+    <span className="message" aria-label={ariaMessage}>
+      {messageMemo}
+    </span>
+  ) : (
+    <span className="message">{messageMemo}</span>
+  );
+
   return (
     isVisible && (
-      <div
-        className="secondary__notification show"
-        ref={notfElement}
-        aria-live="assertive"
-        aria-atomic="true"
-      >
+      <div className="secondary__notification show" ref={notfElement} role="alert">
         <i className={`icon ${icon}`} />
-        <span className="message">{messageMemo}</span>
+        {messageSpan}
       </div>
     )
   );

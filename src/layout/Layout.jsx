@@ -39,8 +39,8 @@ export default function Layout() {
     });
   };
 
-  const secondaryNotificationHandler = (message, icon) => {
-    setSecondaryNotification({ id: Date.now(), message, icon });
+  const secondaryNotificationHandler = (message, icon, ariaMessage) => {
+    setSecondaryNotification({ id: Date.now(), ariaMessage, message, icon });
   };
 
   const wsContextValue = useMemo(() => webSocketData, [webSocketData]);
@@ -51,7 +51,8 @@ export default function Layout() {
     }
   };
 
-  const onWsNotification = (message, icon) => secondaryNotificationHandler(message, icon);
+  const onWsNotification = (message, icon, ariaMessage) =>
+    secondaryNotificationHandler(message, icon, ariaMessage);
 
   // Initialize the WebSocket connection
   const initializeWebsocket = (symbolsArray = getUniqueSymbolsArray(subscribedSymbols)) => {
@@ -76,7 +77,6 @@ export default function Layout() {
         ...subscribedSymbols,
         watchlist: [...subscribedSymbols.watchlist, symbol],
       });
-      secondaryNotificationHandler(`Subscribed: ${symbol}`, 'ri-checkbox-circle-line');
     }
   };
 

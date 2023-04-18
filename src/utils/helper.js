@@ -32,3 +32,9 @@ export function ariaSymbolName(symbol) {
   // to create a string that screen readers will pronounce each letter separately like BTCUSDT to B T C U S D T
   return symbol.split('').join(' ');
 }
+
+export function ariaLabelizeSymbol(symbol, originalString) {
+  // replace all occurrences of the symbol in the string
+  // The regular expression uses the 'g' flag to replace all occurrences, not just the first one
+  return originalString.replace(new RegExp(symbol, 'g'), ariaSymbolName(symbol));
+}

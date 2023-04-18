@@ -6,24 +6,32 @@ import {
 } from '../../utils/localStorageUtils';
 
 import './notificationWindow.scss';
-import { ariaSymbolName } from '../../utils/helper';
+import { ariaLabelizeSymbol, ariaSymbolName } from '../../utils/helper';
 
 function NotificationItem({ notf, showWindow, removeNotification }) {
-  let symbolName = notf.condition.split(' ')[0];
-  symbolName = ariaSymbolName(symbolName);
+  const ariaSymbol = ariaSymbolName(notf.symbol);
+  const ariaCondition = ariaLabelizeSymbol(notf.symbol, notf.condition);
+  const ariaTitle = ariaLabelizeSymbol(notf.symbol, notf.title);
+  const ariaDescrpition = ariaLabelizeSymbol(notf.symbol, notf.description);
   return (
     <li className="notification">
       <span className="notification__time">{notf.time}</span>
       <div className="notification__container">
-        <span className="notification__condition">{notf.condition}</span>
-        <span className="notification__title">{notf.title}</span>
-        <span className="notification__desc">{notf.description}</span>
+        <span className="notification__condition" aria-label={ariaCondition}>
+          {notf.condition}
+        </span>
+        <span className="notification__title" aria-label={ariaTitle}>
+          {notf.title}
+        </span>
+        <span className="notification__desc" aria-label={ariaDescrpition}>
+          {notf.description}
+        </span>
       </div>
       <i
         className="notification__button--close ri-close-line"
         tabIndex={showWindow ? 0 : -1}
         role="button"
-        aria-label={`Delete ${symbolName} notification`}
+        aria-label={`Delete ${ariaSymbol} notification`}
         onClick={() => removeNotification(notf.key)}
         onKeyDown={(event) => {
           if (event.key === 'Enter' || event.key === ' ') {

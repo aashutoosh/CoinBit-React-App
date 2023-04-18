@@ -1,4 +1,5 @@
 import { WEBSOCKET_URL, WEBSOCKET_RECONNECT_SEC, WEBSOCKET_INITIAL_WAIT_SEC } from './config';
+import { ariaSymbolName } from './utils/helper';
 
 // Websocket
 class WsConnect {
@@ -58,7 +59,11 @@ class WsConnect {
 
     if (this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(symbolObject));
-      this.notificationHandler(`Subscribed: ${symbol}`, 'ri-checkbox-circle-line');
+      this.notificationHandler(
+        `Subscribed: ${symbol}`,
+        'ri-checkbox-circle-line',
+        `Subscribed: ${ariaSymbolName(symbol)}`,
+      );
     } else {
       // Try again after 2 seconds
       setTimeout(() => {
@@ -76,7 +81,11 @@ class WsConnect {
 
     if (this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(symbolObject));
-      this.notificationHandler(`Unsubscribed: ${symbol}`, 'ri-delete-bin-line');
+      this.notificationHandler(
+        `Unsubscribed: ${symbol}`,
+        'ri-delete-bin-line',
+        `Unsubscribed: ${ariaSymbolName(symbol)}`,
+      );
     } else {
       // Try again after 2 seconds
       setTimeout(() => {

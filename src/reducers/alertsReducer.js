@@ -30,6 +30,7 @@ export default function alertsReducer(currentAlerts, action) {
       updateLocalStorage('triggeredAlerts', updatedTriggeredAlerts);
 
       action.primaryNotification({
+        symbol: action.payload.symbol,
         title: action.payload.title,
         description: action.payload.description,
         condition: `${action.payload.symbol} ${action.payload.condition} ${action.payload.price}`,
