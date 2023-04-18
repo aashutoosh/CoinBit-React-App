@@ -21,7 +21,7 @@ export default function AlertRow({ alert, pendingAlertsType, actionHandler, tabl
   };
 
   return (
-    <tr className="row" data-key={alert.createdon} tabIndex={0} ref={rowRef}>
+    <tr className="row" data-key={alert.createdon} ref={rowRef}>
       <td>
         <div className="textContent">
           <span className="title">{alert.title}</span>
