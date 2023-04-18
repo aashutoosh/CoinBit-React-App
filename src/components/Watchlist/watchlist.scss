@@ -64,7 +64,6 @@
     background-color: inherit;
     display: flex;
     align-items: center;
-    padding: 1rem;
     height: var(--header-height);
     border-bottom: 2px solid var(--border);
     z-index: inherit;
@@ -73,7 +72,7 @@
       position: absolute;
       display: flex;
       align-items: center;
-      margin-left: 0.25rem;
+      margin-left: 1.25rem;
     }
 
     &--input {
@@ -84,7 +83,8 @@
       font-size: var(--small-font-size);
       border: none;
       border-bottom: inherit;
-      text-indent: 1.5rem;
+      text-indent: 2.5rem;
+      padding-right: 1rem;
 
       &:active,
       &:focus {
