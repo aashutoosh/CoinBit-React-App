@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { HelmetProvider } from 'react-helmet-async';
 
 import { getAllAlerts, getSubscribedSymbols, getUniqueSymbolsArray } from '../utils/helper';
 import { SecondaryNotificationsProvider } from '../context/secondaryNotificationsContext';
@@ -17,6 +18,7 @@ import SettingsSection from '../components/SettingsSection/SettingsSection';
 import AboutSection from '../components/AboutSection/AboutSection';
 import alertsReducer from '../reducers/alertsReducer';
 import WsConnect from '../wsconnect';
+import SEO from '../components/SEO/SEO';
 
 export default function Layout() {
   const [subscribedSymbols, setSubscribedSymbols] = useState(getSubscribedSymbols());
@@ -162,41 +164,49 @@ export default function Layout() {
   }, []);
 
   return (
-    <WebSocketProvider wsContextValue={wsContextValue}>
-      <PrimaryNotificationsProvider primaryNotification={primaryNotificationHandler}>
-        <SecondaryNotificationsProvider secondaryNotification={secondaryNotificationHandler}>
-          <Header
-            primaryNotification={primaryNotification}
-            activeSectionHandler={activeSectionHandler}
-            onBellClick={toggleNotificationWindow}
-            showNotificationWindow={showNotificationWindow}
-          />
-          <PrimaryNotification notification={primaryNotification} />
-          <SecondaryNotification notification={secondaryNotification} />
-          <AlertModal modalObject={alertModal} dispatchAlerts={dispatchAlerts} />
-          <main className="main container">
-            <NotificationWindow
+    <HelmetProvider>
+      <WebSocketProvider wsContextValue={wsContextValue}>
+        <PrimaryNotificationsProvider primaryNotification={primaryNotificationHandler}>
+          <SecondaryNotificationsProvider secondaryNotification={secondaryNotificationHandler}>
+            <SEO
+              title="CoinBit React App"
+              description="Get real-time cryptocurrency data updates and customized price alerts with CoinBit React App. Built using React and the Binance websocket API, this app is the ultimate tool for traders looking to stay ahead of the game."
+              name="CoinBit"
+              type="app"
+            />
+            <Header
               primaryNotification={primaryNotification}
-              showWindow={showNotificationWindow}
+              activeSectionHandler={activeSectionHandler}
+              onBellClick={toggleNotificationWindow}
+              showNotificationWindow={showNotificationWindow}
             />
-            <Watchlist
-              createAlert={createAlertHandler}
-              activeSection={activeSection}
-              websocketActions={websocketActions}
-            />
-            <AlertSection
-              subscribedSymbols={subscribedSymbols}
-              createAlert={createAlertHandler}
-              activeSection={activeSection}
-              allAlerts={allAlerts}
-              dispatchAlerts={dispatchAlerts}
-              websocketActions={websocketActions}
-            />
-            <SettingsSection activeSection={activeSection} />
-            <AboutSection activeSection={activeSection} />
-          </main>
-        </SecondaryNotificationsProvider>
-      </PrimaryNotificationsProvider>
-    </WebSocketProvider>
+            <PrimaryNotification notification={primaryNotification} />
+            <SecondaryNotification notification={secondaryNotification} />
+            <AlertModal modalObject={alertModal} dispatchAlerts={dispatchAlerts} />
+            <main className="main container">
+              <NotificationWindow
+                primaryNotification={primaryNotification}
+                showWindow={showNotificationWindow}
+              />
+              <Watchlist
+                createAlert={createAlertHandler}
+                activeSection={activeSection}
+                websocketActions={websocketActions}
+              />
+              <AlertSection
+                subscribedSymbols={subscribedSymbols}
+                createAlert={createAlertHandler}
+                activeSection={activeSection}
+                allAlerts={allAlerts}
+                dispatchAlerts={dispatchAlerts}
+                websocketActions={websocketActions}
+              />
+              <SettingsSection activeSection={activeSection} />
+              <AboutSection activeSection={activeSection} />
+            </main>
+          </SecondaryNotificationsProvider>
+        </PrimaryNotificationsProvider>
+      </WebSocketProvider>
+    </HelmetProvider>
   );
 }
