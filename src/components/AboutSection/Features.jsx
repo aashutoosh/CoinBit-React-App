@@ -10,6 +10,7 @@ export default function Features() {
         <li>- Custom price alerts with options to send to Discord.</li>
         <li>- Responsive design for mobile, tablet and desktop.</li>
         <li>- Dark and light mode options for user preference.</li>
+        <li>- Accessible via screen reader, easy Tab key navigation.</li>
       </ul>
     </div>
   );

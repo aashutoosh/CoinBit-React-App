@@ -14,7 +14,7 @@ export default function Disclaimer() {
         <li>
           - If you encounter any 🐛 bugs or issues, please report them on our{' '}
           <a
-            href="https://github.com/aashutoosh/CoinBit-App/issues"
+            href="https://github.com/aashutoosh/CoinBit-React-App/issues"
             target="_blank"
             rel="noreferrer"
           >
