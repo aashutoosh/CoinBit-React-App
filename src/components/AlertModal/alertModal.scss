@@ -24,6 +24,18 @@
     scale: 1;
   }
 
+  &__backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: black;
+    overflow: hidden;
+    z-index: 100;
+    opacity: 0.6;
+  }
+
   &__title {
     font-size: 1.1rem;
     font-weight: 500;
@@ -35,24 +47,38 @@
 
   &__close {
     position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     top: 1.2rem;
     right: 1.2rem;
     transition: background-color 0.2s;
+    background-color: transparent;
     padding: 4px;
     font-size: 1.2rem;
     border-radius: 50%;
     cursor: pointer;
 
+    i {
+      color: var(--text-light);
+    }
+
     &:hover {
       background-color: rgb(101, 101, 101);
-      color: #fff;
+
+      i {
+        color: #fff;
+      }
     }
 
     &:focus {
       background-color: rgb(101, 101, 101);
       outline: 2px solid var(--primary-100);
       outline-offset: 4px;
-      color: #fff;
+
+      i {
+        color: #fff;
+      }
     }
 
     &:focus:not(:focus-visible) {

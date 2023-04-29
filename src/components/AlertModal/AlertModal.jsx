@@ -7,6 +7,46 @@ import './alertModal.scss';
 import AllSymbolsOptions from './AllSymbolsOptions';
 import CloseButton from './CloseButton';
 
+function trapFocus(element, prevFocusableElement, elementFocus = null) {
+  const focusableElements = Array.from(element.querySelectorAll('input, select, button'));
+
+  const firstFocusableElement = focusableElements[0];
+  const lastFocusableElement = focusableElements[focusableElements.length - 1];
+
+  let currentFocus = elementFocus || firstFocusableElement;
+  currentFocus.focus();
+
+  const handleFocus = (event) => {
+    event.preventDefault();
+
+    // if the focused element "lives" in your modal container then just focus it
+    if (focusableElements.includes(event.target)) {
+      currentFocus = event.target;
+    } else {
+      // you're out of the container
+      // if previously the focused element was the first element then focus the last
+      // element - means you were using the shift key
+      if (currentFocus === firstFocusableElement) {
+        lastFocusableElement.focus();
+      } else {
+        // you previously were focused on the last element so just focus the first one
+        firstFocusableElement.focus();
+      }
+      // update the current focus
+      currentFocus = document.activeElement;
+    }
+  };
+
+  document.addEventListener('focus', handleFocus, true);
+
+  return {
+    onClose: () => {
+      document.removeEventListener('focus', handleFocus, true);
+      prevFocusableElement.focus();
+    },
+  };
+}
+
 function AlertModal({ modalObject, dispatchAlerts }) {
   const secondaryNotification = useContext(SecondaryNotificationsContext);
   const wsData = useContext(WebSocketContext);
@@ -25,6 +65,9 @@ function AlertModal({ modalObject, dispatchAlerts }) {
   const [formData, setFormData] = useState(initialFormData);
   const [priceData, setPriceData] = useState({});
   const modalRef = useRef(null);
+  const firstInputRef = useRef(null);
+  const currentElementRef = useRef(null);
+  const focusRef = useRef(null);
 
   const formDataRef = useRef(formData);
   useEffect(() => {
@@ -62,11 +105,18 @@ function AlertModal({ modalObject, dispatchAlerts }) {
     setTimeout(() => {
       modalRef.current.classList.remove('show');
       modalRef.current.classList.add('show');
+      currentElementRef.current = document.activeElement;
+
+      focusRef.current = trapFocus(modalRef.current, document.activeElement, firstInputRef.current);
     }, 100);
   }, [setIsVisible, setFormData, modalRef, initialFormData]);
 
   const hideModal = () => {
     modalRef.current.classList.remove('show');
+
+    currentElementRef.current = null;
+    focusRef.current.onClose();
+
     setTimeout(() => {
       setIsVisible(false);
     }, 100);
@@ -116,117 +166,122 @@ function AlertModal({ modalObject, dispatchAlerts }) {
     hideModal();
   };
 
+  const modalType = `${modalObject.type === 'create' ? 'Create' : 'Update'} Alert`;
+
   return (
     isVisible && (
-      <section
-        className="alertmodal"
-        id="alertmodal"
-        ref={modalRef}
-        aria-label="Create alert modal"
-      >
-        <h2 className="alertmodal__title">{`${
-          modalObject.type === 'create' ? 'Create' : 'Update'
-        } Alert`}</h2>
-        <CloseButton closeHandler={hideModal} />
-        <form
-          className="alertmodal__form"
-          data-key=""
-          autoComplete="off"
-          onSubmit={handleSubmit}
-          aria-label="Create alert form"
+      <>
+        <div
+          className="alertmodal"
+          id="alertmodal"
+          ref={modalRef}
+          aria-label={modalType}
+          role="dialog"
         >
-          <div className="alertmodal__form--fields">
-            <input
-              id="title"
-              type="text"
-              className="input title"
-              name="title"
-              onChange={handleInputChange}
-              value={formData.title}
-              required
-            />
-            <label htmlFor="title" className="label alertmodal__form--title">
-              Title
-            </label>
-          </div>
-          <div className="alertmodal__form--fields">
-            <input
-              type="text"
-              className="input description"
-              name="description"
-              id="description"
-              onChange={handleInputChange}
-              value={formData.description}
-              required
-            />
-            <label htmlFor="description" className="label alertmodal__form--desc">
-              Description
-            </label>
-          </div>
-          <div className="fields">
+          <h2 className="alertmodal__title">{modalType}</h2>
+          <CloseButton closeHandler={hideModal} />
+          <form
+            className="alertmodal__form"
+            data-key=""
+            autoComplete="off"
+            onSubmit={handleSubmit}
+            aria-label="Create alert form"
+          >
             <div className="alertmodal__form--fields">
-              <select
-                name="symbol"
-                className="select symbol"
+              <input
+                id="title"
+                type="text"
+                className="input title"
+                name="title"
                 onChange={handleInputChange}
-                value={formData.symbol || getUniqueSymbols()?.[0]}
-                id="modalSymbolSelect"
-                aria-label={`Selected ${ariaSymbolName(
-                  formData.symbol || getUniqueSymbols()?.[0],
-                )}`}
-              >
-                <AllSymbolsOptions />
-              </select>
-              <label htmlFor="modalSymbolSelect" className="label alertmodal__form--symbol">
-                Symbol
-              </label>
-              <span
-                id="modalSymbolPrice"
-                className={`alertmodal__form--price ${priceData.priceColor}`}
-              >
-                {priceData.price}
-              </span>
-            </div>
-            <div className="alertmodal__form--fields">
-              <select
-                name="condition"
-                className="select condition"
-                onChange={handleInputChange}
-                value={formData.condition}
-                id="condition"
-              >
-                <option value=">=">Greater than or equal to (&gt;=)</option>
-                <option value="<=">Less than or equal to (&lt;=) </option>
-                <option value="<">Less than (&lt;) </option>
-                <option value=">">Greater than (&gt;)</option>
-                <option value="==">Equal to (==)</option>
-              </select>
-              <label htmlFor="condition" className="label alertmodal__form--condition">
-                Condition
+                value={formData.title}
+                ref={firstInputRef}
+                required
+              />
+              <label htmlFor="title" className="label alertmodal__form--title">
+                Title
               </label>
             </div>
-          </div>
-          <div className="alertmodal__form--fields">
-            <input
-              type="number"
-              min={0}
-              step="any"
-              className="input price"
-              name="price"
-              onChange={handleInputChange}
-              value={formData.price}
-              id="price"
-              required
-            />
-            <label htmlFor="price" className="label alertmodal__form--price">
-              Alert Price
-            </label>
-          </div>
-          <button className="alertmodal__form--submit" type="submit">
-            {`${modalObject.type === 'create' ? 'Create' : 'Update'}`}
-          </button>
-        </form>
-      </section>
+            <div className="alertmodal__form--fields">
+              <input
+                type="text"
+                className="input description"
+                name="description"
+                id="description"
+                onChange={handleInputChange}
+                value={formData.description}
+                required
+              />
+              <label htmlFor="description" className="label alertmodal__form--desc">
+                Description
+              </label>
+            </div>
+            <div className="fields">
+              <div className="alertmodal__form--fields">
+                <select
+                  name="symbol"
+                  className="select symbol"
+                  onChange={handleInputChange}
+                  value={formData.symbol || getUniqueSymbols()?.[0]}
+                  id="modalSymbolSelect"
+                  aria-label={`Selected ${ariaSymbolName(
+                    formData.symbol || getUniqueSymbols()?.[0],
+                  )}`}
+                >
+                  <AllSymbolsOptions />
+                </select>
+                <label htmlFor="modalSymbolSelect" className="label alertmodal__form--symbol">
+                  Symbol
+                </label>
+                <span
+                  id="modalSymbolPrice"
+                  className={`alertmodal__form--price ${priceData.priceColor}`}
+                >
+                  {priceData.price}
+                </span>
+              </div>
+              <div className="alertmodal__form--fields">
+                <select
+                  name="condition"
+                  className="select condition"
+                  onChange={handleInputChange}
+                  value={formData.condition}
+                  id="condition"
+                >
+                  <option value=">=">Greater than or equal to (&gt;=)</option>
+                  <option value="<=">Less than or equal to (&lt;=) </option>
+                  <option value="<">Less than (&lt;) </option>
+                  <option value=">">Greater than (&gt;)</option>
+                  <option value="==">Equal to (==)</option>
+                </select>
+                <label htmlFor="condition" className="label alertmodal__form--condition">
+                  Condition
+                </label>
+              </div>
+            </div>
+            <div className="alertmodal__form--fields">
+              <input
+                type="number"
+                min={0}
+                step="any"
+                className="input price"
+                name="price"
+                onChange={handleInputChange}
+                value={formData.price}
+                id="price"
+                required
+              />
+              <label htmlFor="price" className="label alertmodal__form--price">
+                Alert Price
+              </label>
+            </div>
+            <button className="alertmodal__form--submit" type="submit">
+              {`${modalObject.type === 'create' ? 'Create' : 'Update'}`}
+            </button>
+          </form>
+        </div>
+        <div className="alertmodal__backdrop" />
+      </>
     )
   );
 }

@@ -7,14 +7,15 @@ export default function CloseButton({ closeHandler }) {
   };
 
   return (
-    <i
+    <button
       ref={closeButtonRef}
-      className="alertmodal__close ri-close-line"
+      className="alertmodal__close"
       onClick={closeHandler}
       onKeyDown={handleKeyDown}
-      role="button"
-      tabIndex={0}
       aria-label="Close"
-    />
+      type="button"
+    >
+      <i className="ri-close-line" />
+    </button>
   );
 }
