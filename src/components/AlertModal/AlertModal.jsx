@@ -66,7 +66,6 @@ function AlertModal({ modalObject, dispatchAlerts }) {
   const [priceData, setPriceData] = useState({});
   const modalRef = useRef(null);
   const firstInputRef = useRef(null);
-  const currentElementRef = useRef(null);
   const focusRef = useRef(null);
 
   const formDataRef = useRef(formData);
@@ -105,7 +104,6 @@ function AlertModal({ modalObject, dispatchAlerts }) {
     setTimeout(() => {
       modalRef.current.classList.remove('show');
       modalRef.current.classList.add('show');
-      currentElementRef.current = document.activeElement;
 
       focusRef.current = trapFocus(modalRef.current, document.activeElement, firstInputRef.current);
     }, 100);
@@ -114,13 +112,24 @@ function AlertModal({ modalObject, dispatchAlerts }) {
   const hideModal = () => {
     modalRef.current.classList.remove('show');
 
-    currentElementRef.current = null;
     focusRef.current.onClose();
 
     setTimeout(() => {
       setIsVisible(false);
     }, 100);
   };
+
+  function onKeyDown(event) {
+    if (event.key === 'Escape' && isVisible) hideModal();
+  }
+
+  useEffect(() => {
+    document.addEventListener('keydown', onKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  });
 
   useEffect(() => {
     if (modalObject.type) showModal();
