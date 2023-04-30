@@ -17,8 +17,6 @@ function trapFocus(element, prevFocusableElement, elementFocus = null) {
   currentFocus.focus();
 
   const handleFocus = (event) => {
-    event.preventDefault();
-
     // if the focused element "lives" in your modal container then just focus it
     if (focusableElements.includes(event.target)) {
       currentFocus = event.target;
@@ -233,9 +231,11 @@ function AlertModal({ modalObject, dispatchAlerts }) {
                   onChange={handleInputChange}
                   value={formData.symbol || getUniqueSymbols()?.[0]}
                   id="modalSymbolSelect"
-                  aria-label={`Selected ${ariaSymbolName(
-                    formData.symbol || getUniqueSymbols()?.[0],
-                  )}`}
+                  aria-label={
+                    getUniqueSymbols().length
+                      ? `Selected ${ariaSymbolName(formData.symbol || getUniqueSymbols()?.[0])}`
+                      : 'No symbols found. Add symbols in watchlist to create alert.'
+                  }
                 >
                   <AllSymbolsOptions />
                 </select>
