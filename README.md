@@ -54,9 +54,9 @@ This will create an optimized and minified version of the project in the `dist` 
 
 ### Linting and Formatting
 
-To lint the JavaScript and JSX files using ESLint, run the following command: `npm run lint`
-To automatically fix linting issues, run: `npm run lintfix`
-To format the codebase using Prettier, run: `npm run format`
+- To lint the JavaScript and JSX files using ESLint, run the following command: `npm run lint`
+- To automatically fix linting issues, run: `npm run lintfix`
+- To format the codebase using Prettier, run: `npm run format`
 
 ## Contributing
 
