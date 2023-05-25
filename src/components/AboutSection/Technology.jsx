@@ -8,8 +8,8 @@ export default function Technology() {
         <li>- HTML, CSS (SCSS), and React.</li>
         <li>
           - Hosted on{' '}
-          <a href="https://developers.cloudflare.com/pages/" target="_blank" rel="noreferrer">
-            Cloudflare Pages.
+          <a href="https://www.netlify.com/" target="_blank" rel="noreferrer">
+            Netlify.
           </a>
         </li>
         <li>
